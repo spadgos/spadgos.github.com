@@ -17,7 +17,10 @@ var github = (function(){
           var repos = [];
           if (!data || !data.repositories) { return; }
           for (var i = 0; i < data.repositories.length; i++) {
-            if (options.skip_forks && data.repositories[i].fork) { continue; }
+            if ((options.skip_forks && data.repositories[i].fork)
+                || ((options.ignore && options.ignore.indexOf(data.repositories[i].name) !== -1))) {
+              continue;
+            }
             repos.push(data.repositories[i]);
           }
           repos.sort(function(a, b) {
@@ -34,4 +37,4 @@ var github = (function(){
       });
     }
   };
-})();
+}());

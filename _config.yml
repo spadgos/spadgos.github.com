@@ -61,6 +61,8 @@ github_user: spadgos
 github_repo_count: 5
 github_show_profile_link: true
 github_skip_forks: true
+# ignore the following repos -- a space separated list
+github_ignore_repos: "spadgos.github.com"
 
 # Twitter
 twitter_user:
