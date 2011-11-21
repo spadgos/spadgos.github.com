@@ -3,5 +3,43 @@
   <h1>Stack Overflow</h1>
   <a href="http://stackoverflow.com/users/{{site.stackoverflow_userid}}/{{site.stackoverflow_username}}"
     ><img src="http://stackoverflow.com/users/flair/{{site.stackoverflow_userid}}.png" width="208" height="58" alt="Profile for {{site.stackoverflow_username}} at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="Profile for {{site.stackoverflow_username}} at Stack Overflow, Q&amp;A for professional and enthusiast programmers" /></a>
+  <ul id="so_answer">
+    <li class="loading">Loading recent answers...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '{{ root_url}}/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+      }
+
+      $.ajax({
+        type: 'jsonp',
+        jsonpCallback: 'jsonp',
+        url: 'http://api.stackoverflow.com/1.1/users/{{site.stackoverflow_userid}}/answers'
+           + '?body=false'
+           + '&comments=false'
+           + '&method=get'
+           + '&pagesize=5'
+           + '&jsonp=cb'
+           + '&key={{site.stackoverflow_api_key}}'
+        , success: function(data) {
+          if (!data || !data.answers) { return; }
+          var i, fragment = '', t = $('#so_answer')[0], a, d;
+
+          fragment = '<li>Recent answers on Stack Overflow</li>';
+          for (i = 0; i < data.answers.length; ++i) {
+            a = data.answers[i];
+            // d = new Date(a.creation_date);
+            fragment += '<li><a href="http://stackoverflow.com/questions/' + a.question_id + '/' + a.answer_id + '#' + a.answer_id + '">' + a.title + '</a></li>';
+          }
+          t.innerHTML = fragment;
+        }
+      });
+    });
+  </script>
 </section>
 {% endif %}
