@@ -72,9 +72,10 @@ a {
 }
 
 html {
-  background: $page-bg image-url('line-tile.png') top left;
+  background: $page-bg;
 }
 body {
+  box-shadow: 0 0 150px #997;
   > div {
     background: $sidebar-bg $noise-bg;
     border-bottom: 1px solid $page-border-bottom;
