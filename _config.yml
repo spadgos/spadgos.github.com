@@ -3,7 +3,7 @@
 # ----------------------- #
 
 url: http://spadgos.github.com
-title: Nick Fisher's Blog
+title: nickf on code
 subtitle: Javascript and code nerdity
 author: Nick Fisher
 simple_search: http://google.com/search
@@ -44,7 +44,7 @@ titlecase: true       # Converts page and post titles to tilecase
 
 # list each of the sidebar modules you want to include, in the order you want them to appear.
 # To add custom asides, create files in /source/_includes/custom/asides/ and add them to the list like 'custom/asides/custom_aside_name.html'
-default_asides: [asides/recent_posts.html, asides/github.html, asides/stack_overflow.html]
+default_asides: [asides/recent_posts.html, asides/github.html, asides/soundcloud.html, asides/stack_overflow.html]
 
 # Each layout uses the default asides, but they can have their own asides instead. Simply uncomment the lines below
 # and add an array with the asides you want to use.
@@ -103,3 +103,9 @@ facebook_like: false
 stackoverflow_userid: 9021
 stackoverflow_username: nickf
 stackoverflow_api_key: TPz4ZgIuDUiQCrMIEyBIPw
+
+# SoundCloud Widget
+
+soundcloud_type: favorites  # one of groups, users, favorites, sets, apps, tracks
+soundcloud_id: spadgos        # the id of the group, user, set, etc... usernames can be used too
+soundcloud_title:

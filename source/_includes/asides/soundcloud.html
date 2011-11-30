@@ -1,0 +1,8 @@
+{% if site.soundcloud_id %}
+<section>
+  {% if site.soundcloud_title %}
+    <h1>{{ site.soundcloud_title }}</h1>
+  {% endif %}
+  <iframe width="100%" height="{% if site.soundcloud_type == 'tracks' %}166{% else %}450{% endif %}" scrolling="no" frameborder="no" src="http://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2F{% if site.soundcloud_type == 'favorites' %}users{% else %}{{ site.soundcloud_type }}{% endif %}%2F{{site.soundcloud_id}}{% if site.soundcloud_type == 'favorites' %}%2Ffavorites{% endif %}&amp;auto_play=false&amp;show_artwork=false&amp;color=ff7700"></iframe>
+</section>
+{% endif %}
