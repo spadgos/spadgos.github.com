@@ -25,11 +25,18 @@ One great thing about the OpenStreetMap data is that it tracks heaps of geograph
 
 For example, in a large city like Amsterdam, searching for *restaurants* will end up with a cacophony, as these tend to be clustered quite tightly in neighbourhoods. *Post boxes*, however are evenly spaced thoughout the city and actually can create something resembling a melody. Using features which are clustered in a single place (for example, embassies or brothels) can be used for a loud *hit* in your soundscape.
 
-The quality of the project is still firmly in the "hack" category -- it went from idea to completion in 24 hours! -- but it's rather functional still, if you ignore some visual glitching... Also remember that OpenStreetMap is a community-built map and it's definitely not a complete yet: if you see features missing in your area, don't forget you can go add them yourself!
+The quality of the project is still firmly in the "hack" category -- it did go from idea to completion in 24 hours, remember! -- but it's rather functional still, if you ignore some visual glitching... Also, OpenStreetMap is a community-built map and it's definitely not complete yet: if you see features missing in your area, don't forget you can go add them yourself!
 
-You can check it out at [http://citysonar.herokuapp.com][citysonar], and grab the code on [GitHub][gh], but my god, the code is hacky. Please don't look at it.
+You can check it out at [http://citysonar.herokuapp.com][citysonar], and grab the code on [GitHub][gh], but my god, the code is hacky. Please don't look at it. *Also, the API we use is very slow sometimes, so you'll just need to be patient sometimes.* 
 
-[amsmhd]: http://musichackday.org
+### Bonus video ###
+
+Here is the recording from the presentations. CitySonar starts at 33:20.
+
+<iframe width="480" height="386" src="http://www.ustream.tv/embed/recorded/21353878" scrolling="no" frameborder="0" style="border: 0px none transparent;"></iframe>
+
+
+[amsmhd]: http://amsterdam.musichackday.org/2012/index.php?page=Main+page
 [mhd]:    http://musichackday.org
 [hacks]:  http://wiki.musichackday.org/index.php?title=Amsterdam_2012_Hacks
 [sasha]:  http://twitter.com/#!a_kovalev
