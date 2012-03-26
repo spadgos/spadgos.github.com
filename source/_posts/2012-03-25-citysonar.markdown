@@ -17,7 +17,7 @@ I worked with [Sasha][sasha] on building an experiment we called "[CitySonar][ci
 
 Markers further away are lower notes, ones closer are higher. Each different type of feature can have different characteristics for their notes, including the octave range, and the attack and release of the notes.
 
-![CitySonar screenshot](https://github.com/spadgos/soundradar/raw/master/assets/screen1.png)
+[![CitySonar screenshot](https://github.com/spadgos/soundradar/raw/master/assets/screen1.png)][citysonar]
 
 > **Warning full frontal nerdity:** This is a client-side app, built entirely in Javascript. The only server-side component was a small NodeJS proxy to get around cross-origin security restrictions. The data was pulled from the [OpenStreetMap][osm] XAPI, custom map tiles provided by [Stamen Maps][stamen], and client-side audio generation was done by [Audiolet][audiolet].
 
@@ -36,12 +36,12 @@ Here is the recording from the presentations. CitySonar starts at 33:20.
 <iframe width="480" height="386" src="http://www.ustream.tv/embed/recorded/21353878" scrolling="no" frameborder="0" style="border: 0px none transparent;"></iframe>
 
 
-[amsmhd]: http://amsterdam.musichackday.org/2012/index.php?page=Main+page
-[mhd]:    http://musichackday.org
-[hacks]:  http://wiki.musichackday.org/index.php?title=Amsterdam_2012_Hacks
-[sasha]:  http://twitter.com/#!a_kovalev
+[amsmhd]:    http://amsterdam.musichackday.org/2012/index.php?page=Main+page
+[mhd]:       http://musichackday.org
+[hacks]:     http://wiki.musichackday.org/index.php?title=Amsterdam_2012_Hacks
+[sasha]:     http://twitter.com/#!a_kovalev
 [citysonar]: http://citysonar.herokuapp.com/
-[osm]:    http://wiki.openstreetmap.org/
-[audiolet]: https://github.com/oampo/audiolet
-[stamen]: http://maps.stamen.com/
-[gh]: https://github.com/spadgos/soundradar
+[osm]:       http://wiki.openstreetmap.org/
+[audiolet]:  https://github.com/oampo/audiolet
+[stamen]:    http://maps.stamen.com/
+[gh]:        https://github.com/spadgos/soundradar
