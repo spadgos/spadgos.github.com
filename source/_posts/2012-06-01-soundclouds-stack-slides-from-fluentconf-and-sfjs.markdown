@@ -15,7 +15,7 @@ Anyway, I think it went really well and I got to talk to a lot of really interes
 
 You can take a look at the slides here: [SoundCloud's Stack][slides].
 
-![](sfjs-next-soundcloud/logo.png)
+![](/sfjs-next-soundcloud/logo.png)
 
 Coming shortly, I'll be writing a blog post for [SoundCloud Backstage][backstage], and probably write another post here with more in-depth details about some of the techniques I spoke about in the talks.
 
@@ -24,6 +24,6 @@ PS: Due to all the people I spoke to mocking my luddite ways, I finally caved an
 [fluent]: http://fluentconf.com/fluent2012
 [next]: http://next.soundcloud.com
 [sfjs]: http://www.meetup.com/jsmeetup/
-[slides]: sfjs-next-soundcloud/
+[slides]: /sfjs-next-soundcloud/
 [backstage]: http://backstage.soundcloud.com/
 [twitter]: http://twitter.com/spadgos
