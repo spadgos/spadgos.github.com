@@ -1,0 +1,315 @@
+<html>
+<head>
+  <title>SoundCloud's Stack</title>
+  <link rel="stylesheet" type="text/css" href="sc.min.css">
+  <style type="text/css">
+    .title {
+      font-size: 64pt;
+    }
+    body {
+      font-size: 48px;
+    }
+    .step {
+      width: 900px;
+      padding: 40px;
+      margin: 20px auto;
+      text-align: center;
+    }
+    .step.wider {
+      width: 980px;
+      padding: 40px 0;
+    }
+    #contact {
+      position: relative;
+      padding-bottom: 300px;
+    }
+
+    #hiring {
+      position: absolute;
+      bottom: 75px;
+      right: -60px;
+      font-size: 32pt;
+      -webkit-transition: opacity 0.2s linear;
+              transition: opacity 0.2s linear;
+    }
+    .future #hiring {
+      opacity: 0;
+    }
+    #stack {
+      font-size: 32px;
+      color: rgba(51, 51, 51, 0.4);
+      -webkit-transition: color 0.2s linear;
+      transition: color 0.2s linear;
+    }
+    h2 {
+      font-size: 48px;
+    }
+    .column {
+      width: 33%;
+      float: left;
+    }
+    #stack.active, #stack.future,
+    .impress-on-stack-infra #stack .infra,
+    .impress-on-stack-runtime #stack .runtime {
+      color: #333;
+    }
+    pre {
+      text-align: left;
+      font-size: 38px;
+      background-color: #272822;
+      color: #E6DB74;
+      border-radius: 30px;
+      padding: 0 20px;
+    }
+    code {
+      font-family: "Ubuntu Mono", monospace;
+    }
+    ul {
+      text-align: left;
+    }
+    #watermark {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      font-size: 24px;
+    }
+    #watermark > img {
+      vertical-align: text-bottom;
+      width: 80px;
+    }
+  </style>
+</head>
+<body class="sc-font">
+<div id="watermark" class="sc-text-light">
+  @spadgos #nextsoundcloud <img src="cloud.png">
+</div>
+<div id="impress">
+  <div class="step title" data-x="0" data-y="0" data-scale="4">
+    <img src="800x500_orange.png">
+  </div>
+  <div class="step title" data-x="-4000" data-y="0">
+    Who am I <span class="sc-orange">not</span>?
+  </div>
+  <div class="step" data-x="-5000" data-y="0">
+    <img src="nick-fisher-music.jpg"><br>
+    @nickfishermusic
+  </div>
+  <div class="step" data-x="-6000" data-y="0">
+    <img src="lucky-number-slevin-2.jpg">
+  </div>
+  <div class="step" data-x="-7000" data-y="0">
+    <img src="living-with-willy-nick-fisher-paperback-cover-art.jpg" style="vertical-align: 25%">
+    <img src="kissing.jpg">
+  </div>
+  <div class="step" data-x="-8000" data-y="0">
+    github.com/spadgos<br>
+    @spadgos<br>
+    <br>
+    <img src="twitter.png">
+  </div>
+  <div class="step" data-x="0" data-y="4000" data-scale="4">
+    <img src="home.png">
+  </div>
+  <div id="stack" class="step" data-x="0" data-y="8000" data-scale="4">
+    <div class="columns">
+      <div class="column infra">
+        <h2>Infrastructure</h2>
+        NodeJS <br>
+        Uglify <br>
+        RequireJS <br>
+        AlmondJS
+      </div>
+      <div class="column runtime">
+        <h2>Run time</h2>
+        Backbone <br>
+        Handlebars
+      </div>
+      <div class="column">
+        <h2>Libraries</h2>
+        Underscore <br>
+        jQuery <br>
+        SoundManager <br>
+      </div>
+    </div>
+  </div>
+  <div id="stack-infra" class="step" data-x="-1200" data-y="8000" data-scale="2"></div>
+  <div class="step code" data-x="-1200" data-y="10000">
+    <pre><code>var View = require('lib/view'),
+    URL = require('lib/url');
+
+module.exports = View.extend({
+  template: require('views/my-view.tmpl'),
+  css: [
+    require('views/my-view.css'),
+    require('lib/views/dialog.css')
+  ]
+});</code></pre>
+  </div>
+  <div class="step code" data-x="-2200" data-y="10000">
+    <pre><code>define("views/my-view", [
+  "require", "exports", "module",
+  "lib/view", "lib/url",
+  "views/my-view.tmpl",
+  "views/my-view.css", "lib/views/dialog.css"
+], function () {
+  var View = require('lib/view'),
+      URL = require('lib/url');
+  // ...
+});</code></pre>
+  </div>
+  <div class="step" data-x="-3400" data-y="10000">
+    Wait, what? CSS?
+    <pre><code
+>var style = module.exports
+          = document.createElement('style');
+style.appendChild(
+  document.createTextNode('.myStyles {...}')
+);</code></pre>
+  </div>
+  <div class="step" data-x="-4600" data-y="10000">
+    <span class="sc-blue">Why not write directly in AMD?</span>
+    <ul>
+      <li>Too much boilerplate</li>
+      <li>Tedious</li>
+      <li>Error prone</li>
+      <li>Easily automated</li>
+    </ul>
+  </div>
+  <div class="step wider" data-x="-1200" data-y="11000">
+    <img src="dep-graph.png" width="980">
+  </div>
+  <div class="step title" data-x="-1200" data-y="12000">
+    Build
+  </div>
+  <div class="step" data-x="-1200" data-y="13000">
+    <pre><code>if (__DEBUG_WARNINGS__ &amp;&amp; !clientId) {
+  console.warn('No clientId');
+}</code></pre>
+  </div>
+  <div class="step title" data-x="-1200" data-y="14000">
+    Serve
+  </div>
+  <!-- - - - - - - - - - - - - - -->
+  <div id="stack-runtime" class="step" data-x="0" data-y="8000" data-scale="2"></div>
+  <div class="step title" data-x="0" data-y="10000">
+    Views
+  </div>
+  <div class="step" data-x="1500" data-y="10000">
+    <ul>
+      <li>Components: <span class="sc-blue">independent</span>, <span class="sc-orange">reusable</span></li>
+      <li>Some are composite (whole pages)</li>
+      <li>Most are very small (button, label)</li>
+      <li>Markup + behaviour = <span class="sc-orange">view</span></li>
+    </ul>
+  </div>
+  <div class="step" data-x="3000" data-y="10000">
+    <span class="sc-blue">Views must play nice</span>
+    <ul>
+      <li>No modifying other views (behaviour or style)</li>
+      <li>No assumptions about where or how it's being used</li>
+    </ul>
+  </div>
+  <div class="step" data-x="0" data-y="11000">
+    <pre><code><small>
+&lt;div class="actions">
+  {{view "views/buttons/like" resource_id=id}}
+  {{view "views/buttons/repost"
+    resource_id=id
+    icon_only=true
+  }}
+&lt;/div>
+    </small></code></pre>
+  </div>
+  <div class="step title" data-x="0" data-y="12000">
+    Models
+  </div>
+  <div class="step wider" data-x="0" data-y="13000">
+    <img src="listen.png">
+  </div>
+  <div class="step" data-x="1500" data-y="13000">
+    <div class="sc-blue">Some problems</div>
+    <ul>
+      <li>Views need to share, not duplicate, the data</li>
+      <li>There might not <i>be</i> any data</li>
+    </ul>
+  </div>
+  <div class="step" data-x="0" data-y="14000">
+    <pre><code>
+s1 = new Sound({ id: 123, title: 'foo' });
+s2 = new Sound({ id: 123, bpm: 120 });
+
+s1 === s2;       // true
+s1.get('bpm');   // 120
+s2.get('title'); // 'foo'
+    </code></pre>
+  </div>
+  <div class="step" data-x="1500" data-y="14000">
+    *Somewhat simplified
+    <pre><code
+>var store = {};
+function Model (id) {
+  if (store[id]) {
+    return store[id];
+  }
+  store[id] = this;
+}</code></pre>
+  </div>
+  <div class="step" data-x="3000" data-y="14000">
+    <span class="sc-blue">Preventing concurrent fetches</span>
+    <ul>
+      <li>Use <code>$.Deferred</code>, jqXHR</li>
+      <li>Start a fetch, hang on to the deferred</li>
+      <li>If already fetching, return the existing deferred</li>
+      <li>Same interface, different actions</li>
+    </ul>
+  </div>
+  <div class="step" data-x="0" data-y="13000"></div>
+  <div class="step" data-x="0" data-y="15000">
+    <span style="font-size: 32px">api.soundcloud.com/tracks/49931</span>
+    <pre><code>{
+  "id":49931,
+  ...
+  "user":{
+    "id":1433,
+    "permalink":"matas",
+    "username":"matas",
+    "avatar_url":"http://i1.soundc..."
+  }
+}</code></pre>
+  </div>
+  <div class="step title" data-x="0" data-y="16000">
+    Learning to let go
+  </div>
+  <div class="step" data-x="1500" data-y="16000">
+    <ul>
+      <li>"Construct" a model: <code>usage++</code></li>
+      <li>Reference not needed: <code>usage--</code></li>
+      <li>Remove unused references periodically</li>
+    </ul>
+  </div>
+  <div class="step" data-x="0" data-y="17000">
+    Cross tab communication with localStorage<br>
+    Volume, play state synchronised
+  </div>
+  <div id="logo2" class="step" data-x="0" data-y="0" data-scale="4"></div>
+  <div id="contact" class="step" data-x="4500" data-y="-3000" data-scale="12">
+    <span class="sc-blue">The front-end team</span>
+    <small>
+    <ul>
+      <li>Tim Bormans @por</li>
+      <li>Nick Fisher @spadgos</li>
+      <li>Alexander Kovalev @akovalev</li>
+      <li>Peter Minarek @pietropizzi</li>
+      <li>Yves Van Goethem @yvg</li>
+      <li>Matas Petrikas @matas</li>
+    </ul>
+  </small>
+    <div id="hiring">
+      We're hiring! soundcloud.com/jobs
+    </div>
+  </div>
+</div>
+<script type="text/javascript" src="impress.js/js/impress.js"></script>
+<script type="text/javascript">impress().init();</script>
+</body>
+</html>
