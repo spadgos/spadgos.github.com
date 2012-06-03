@@ -4,6 +4,7 @@ title: "The instance store"
 date: 2012-06-01 18:20
 comments: true
 categories: 
+published: false
 ---
 
 After giving [my talk][sfjs] at Fluent and SFJS this week, I was really interested to see what people wanted to know more about. I thought I might start a little series to go into the details of some of the techniques which were of interest.
