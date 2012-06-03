@@ -1,0 +1,338 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>CitySonar - nickf on code</title>
+  <meta name="author" content="Nick Fisher">
+
+  
+  <meta name="description" content="This weekend was the Amsterdam Music Hack Day, which I was lucky enough to go along to. Although the weather seemed way too nice to spend the entire &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://spadgos.github.com/blog/2012/03/25/citysonar">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="nickf on code" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-25824270-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">nickf on code</a></h1>
+  
+    <h2>Javascript and code nerdity</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">CitySonar</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-25T19:44:00-07:00" pubdate data-updated="true">Mar 25<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>This weekend was the <a href="http://amsterdam.musichackday.org/2012/index.php?page=Main+page">Amsterdam</a> <a href="http://musichackday.org">Music Hack Day</a>, which I was lucky enough to go along to. Although the weather seemed way too nice to spend the entire weekend indoors staring at a keyboard, <a href="http://wiki.musichackday.org/index.php?title=Amsterdam_2012_Hacks">plenty of people</a> were just as silly as me. Some of the standouts were the Theremin-controlled autotuned karaoke machine, the Bunny Boogie (where a robotic rabbit can upload recordings to SoundCloud and then will dance along to the songs you play there) and a mashup which finds popular animated gifs which match the BPM of songs in your Spotify library and synchronise the two.</p>
+
+<p>I worked with <a href="http://twitter.com/#!a_kovalev">Sasha</a> on building an experiment we called &#8221;<a href="http://citysonar.herokuapp.com/">CitySonar</a>&#8221;. The concept is simple, though perhaps hard to describe in words. Let&#8217;s try anyway:</p>
+
+<ol>
+<li>Choose a location on a map (we used Google Maps)</li>
+<li>Choose a geographical feature, such as banks, schools or cafes.</li>
+<li>A marker is placed on the screen for each of these features near you.</li>
+<li>When you press play, a &#8216;sonar&#8217; sweeps around the map and plays a note for each of the markers.</li>
+</ol>
+
+
+<p>Markers further away are lower notes, ones closer are higher. Each different type of feature can have different characteristics for their notes, including the octave range, and the attack and release of the notes.</p>
+
+<p><a href="http://citysonar.herokuapp.com/"><img src="https://github.com/spadgos/soundradar/raw/master/assets/screen1.png" alt="CitySonar screenshot" /></a></p>
+
+<blockquote><p><strong>Warning full frontal nerdity:</strong> This is a client-side app, built entirely in Javascript. The only server-side component was a small NodeJS proxy to get around cross-origin security restrictions. The data was pulled from the <a href="http://wiki.openstreetmap.org/">OpenStreetMap</a> XAPI, custom map tiles provided by <a href="http://maps.stamen.com/">Stamen Maps</a>, and client-side audio generation was done by <a href="https://github.com/oampo/audiolet">Audiolet</a>.</p></blockquote>
+
+<p>One great thing about the OpenStreetMap data is that it tracks heaps of geographic features, categorised quite granularly, so it&#8217;s not just &#8220;bars&#8221; and &#8220;cafes&#8221; nearby, but power poles, bicycle parking, post boxes, and even brothels. Mapping these features gave some really interesting insights and some interesting results for our experiment.</p>
+
+<p>For example, in a large city like Amsterdam, searching for <em>restaurants</em> will end up with a cacophony, as these tend to be clustered quite tightly in neighbourhoods. <em>Post boxes</em>, however are evenly spaced thoughout the city and actually can create something resembling a melody. Using features which are clustered in a single place (for example, embassies or brothels) can be used for a loud <em>hit</em> in your soundscape.</p>
+
+<p>The quality of the project is still firmly in the &#8220;hack&#8221; category &#8211; it did go from idea to completion in 24 hours, remember! &#8211; but it&#8217;s rather functional still, if you ignore some visual glitching&#8230; Also, OpenStreetMap is a community-built map and it&#8217;s definitely not complete yet: if you see features missing in your area, don&#8217;t forget you can go add them yourself!</p>
+
+<p>You can check it out at <a href="http://citysonar.herokuapp.com/">http://citysonar.herokuapp.com</a>, and grab the code on <a href="https://github.com/spadgos/soundradar">GitHub</a>, but my god, the code is hacky. Please don&#8217;t look at it. <em>Also, the API we use is very slow sometimes, so you&#8217;ll just need to be patient sometimes.</em></p>
+
+<h3>Bonus video</h3>
+
+<p>Here is the recording from the presentations. CitySonar starts at 33:20.</p>
+
+<iframe width="480" height="386" src="http://www.ustream.tv/embed/recorded/21353878" scrolling="no" frameborder="0" style="border: 0px none transparent;"></iframe>
+
+
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Nick Fisher</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-25T19:44:00-07:00" pubdate data-updated="true">Mar 25<span>th</span>, 2012</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/12/01/csspecific-plugin-for-sublimetext/" title="Previous Post: CSSpecific plugin for SublimeText">&laquo; CSSpecific plugin for SublimeText</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/06/01/soundclouds-stack-slides-from-fluentconf-and-sfjs/" title="next Post: SoundCloud's Stack: Slides from FluentConf and SFJS">SoundCloud's Stack: Slides from FluentConf and SFJS &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/06/01/soundclouds-stack-slides-from-fluentconf-and-sfjs/">SoundCloud's Stack: Slides from FluentConf and SFJS</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/25/citysonar/">CitySonar</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/01/csspecific-plugin-for-sublimetext/">CSSpecific plugin for SublimeText</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/30/a-soundcloud-plugin-for-jekyll-slash-octopress/">A SoundCloud plugin for Jekyll/Octopress</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/20/a-new-beginning/">A new beginning</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  
+  <iframe width="100%" height="450" scrolling="no" frameborder="no" src="http://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Fusers%2Fspadgos%2Ffavorites&amp;auto_play=false&amp;show_artwork=false&amp;color=ff7700"></iframe>
+</section>
+
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/spadgos">@spadgos</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'spadgos',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos',
+            ignore: 'spadgos.github.com'.split(" ")
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Stack Overflow</h1>
+  <a href="http://stackoverflow.com/users/9021/nickf"
+    ><img src="http://stackoverflow.com/users/flair/9021.png" width="208" height="58" alt="Profile for nickf at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="Profile for nickf at Stack Overflow, Q&amp;A for professional and enthusiast programmers" /></a>
+  <ul id="so_answer">
+    <li class="loading">Loading recent answers...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+      }
+
+      $.ajax({
+        type: 'jsonp',
+        jsonpCallback: 'jsonp',
+        url: 'http://api.stackoverflow.com/1.1/users/9021/answers'
+           + '?body=false'
+           + '&comments=false'
+           + '&method=get'
+           + '&pagesize=5'
+           + '&jsonp=cb'
+           + '&key=TPz4ZgIuDUiQCrMIEyBIPw'
+        , success: function(data) {
+          if (!data || !data.answers) { return; }
+          var i, fragment = '', t = $('#so_answer')[0], a, d;
+
+          fragment = '<li>Recent answers on Stack Overflow</li>';
+          for (i = 0; i < data.answers.length; ++i) {
+            a = data.answers[i];
+            // d = new Date(a.creation_date);
+            fragment += '<li><a href="http://stackoverflow.com/questions/' + a.question_id + '/' + a.answer_id + '#' + a.answer_id + '">' + a.title + '</a></li>';
+          }
+          t.innerHTML = fragment;
+        }
+      });
+    });
+  </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Nick Fisher -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'spadgos-gh';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://spadgos.github.com/blog/2012/03/25/citysonar/';
+        var disqus_url = 'http://spadgos.github.com/blog/2012/03/25/citysonar/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

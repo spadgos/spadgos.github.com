@@ -1,152 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
 
-<!DOCTYPE html>
-<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
-<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
-<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <title>nickf on code</title>
-  <meta name="author" content="Nick Fisher">
-
-  
-  <meta name="description" content="This week, I&#8217;ve been at the Fluent Conference in San Francisco. It&#8217;s O&#8217;Reilly&#8217;s first javascript conference, and it brought &hellip;">
-  
-
-  <!-- http://t.co/dKP3o1e -->
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  
-  <link rel="canonical" href="http://spadgos.github.com">
-  <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <link href="/atom.xml" rel="alternate" title="nickf on code" type="application/atom+xml">
-  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-
-  
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-25824270-1']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-  </script>
-
-
-</head>
-
-<body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/">nickf on code</a></h1>
-  
-    <h2>Javascript and code nerdity</h2>
-  
-</hgroup>
-
-</header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-</ul>
-<ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
-  <li><a href="/about">About</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
-</ul>
-
-</nav>
-  <div id="main">
-    <div id="content">
-      <div class="blog-index">
-  
-  
-  
-    <article>
-      
-  <header>
+  <title><![CDATA[nickf on code]]></title>
+  <link href="http://spadgos.github.com/atom.xml" rel="self"/>
+  <link href="http://spadgos.github.com/"/>
+  <updated>2012-06-02T22:27:41-07:00</updated>
+  <id>http://spadgos.github.com/</id>
+  <author>
+    <name><![CDATA[Nick Fisher]]></name>
     
-      <h1 class="entry-title"><a href="/blog/2012/06/01/soundclouds-stack-slides-from-fluentconf-and-sfjs/">SoundCloud&#8217;s Stack: Slides From FluentConf and SFJS</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
 
   
-
-
-<time datetime="2012-06-01T16:16:00-07:00" pubdate data-updated="true">Jun 1<span>st</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>This week, I&#8217;ve been at the <a href="http://fluentconf.com/fluent2012">Fluent Conference</a> in San Francisco. It&#8217;s O&#8217;Reilly&#8217;s first javascript conference, and it brought in some really large names in the field including Steve Souders, Brendan Eich, Ward Cunningham, Paul Irish, Lea Verou&#8230; and me.</p>
+  <entry>
+    <title type="html"><![CDATA[SoundCloud's Stack: Slides from FluentConf and SFJS]]></title>
+    <link href="http://spadgos.github.com/blog/2012/06/01/soundclouds-stack-slides-from-fluentconf-and-sfjs/"/>
+    <updated>2012-06-01T16:16:00-07:00</updated>
+    <id>http://spadgos.github.com/blog/2012/06/01/soundclouds-stack-slides-from-fluentconf-and-sfjs</id>
+    <content type="html"><![CDATA[<p>This week, I&#8217;ve been at the <a href="http://fluentconf.com/fluent2012">Fluent Conference</a> in San Francisco. It&#8217;s O&#8217;Reilly&#8217;s first javascript conference, and it brought in some really large names in the field including Steve Souders, Brendan Eich, Ward Cunningham, Paul Irish, Lea Verou&#8230; and me.</p>
 
 <p>I was doing just a short presentation on the Share Your Stack line of talks, and so I was discussing what we&#8217;ve used and how we&#8217;ve built <a href="http://next.soundcloud.com">The Next SoundCloud</a>. I was also quite honoured to be contacted by Dave Nugent and Andrew de Andrade from the <a href="http://www.meetup.com/jsmeetup/">San Francisco JS Users&#8217; group</a> who asked me to give a talk there too. I don&#8217;t know why, but I was kind of expecting a medium-ish sized crowd, and that I&#8217;d be on for 20-30 minutes or so. Turns out there were over 300 people and my slot was for an hour. Cool (gulp).</p>
 
 <p>Anyway, I think it went really well and I got to talk to a lot of really interesting developers doing some really cool stuff. Due to popular demand, I&#8217;m uploading the slides I used for the talk. First of all, I hope they work on your computer (interoperability wasn&#8217;t a key concern at the time), and that they make some sense. For my actual talk, I had embedded soundcloud.com into the presentation using iframes, but this won&#8217;t work for you unless you&#8217;re already in the beta, so I&#8217;ve replaced them with static images. You&#8217;ll just have to imagine all the awesomeness of it.</p>
 
-<p>You can take a look at the slides here: <a href="/sfjs-next-soundcloud/">SoundCloud&#8217;s Stack</a>.</p>
+<p>You can take a look at the slides here: <a href="http://spadgos.github.com/sfjs-next-soundcloud/">SoundCloud&#8217;s Stack</a>.</p>
 
-<p><img src="/sfjs-next-soundcloud/logo.png" alt="" /></p>
+<p><img src="http://spadgos.github.com/sfjs-next-soundcloud/logo.png" alt="" /></p>
 
 <p>Coming shortly, I&#8217;ll be writing a blog post for <a href="http://backstage.soundcloud.com/">SoundCloud Backstage</a>, and probably write another post here with more in-depth details about some of the techniques I spoke about in the talks.</p>
 
 <p>PS: Due to all the people I spoke to mocking my luddite ways, I finally caved and created a Twitter account: <a href="http://twitter.com/spadgos">@spadgos</a></p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/03/25/citysonar/">CitySonar</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-03-25T19:44:00-07:00" pubdate data-updated="true">Mar 25<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>This weekend was the <a href="http://amsterdam.musichackday.org/2012/index.php?page=Main+page">Amsterdam</a> <a href="http://musichackday.org">Music Hack Day</a>, which I was lucky enough to go along to. Although the weather seemed way too nice to spend the entire weekend indoors staring at a keyboard, <a href="http://wiki.musichackday.org/index.php?title=Amsterdam_2012_Hacks">plenty of people</a> were just as silly as me. Some of the standouts were the Theremin-controlled autotuned karaoke machine, the Bunny Boogie (where a robotic rabbit can upload recordings to SoundCloud and then will dance along to the songs you play there) and a mashup which finds popular animated gifs which match the BPM of songs in your Spotify library and synchronise the two.</p>
+  <entry>
+    <title type="html"><![CDATA[CitySonar]]></title>
+    <link href="http://spadgos.github.com/blog/2012/03/25/citysonar/"/>
+    <updated>2012-03-25T19:44:00-07:00</updated>
+    <id>http://spadgos.github.com/blog/2012/03/25/citysonar</id>
+    <content type="html"><![CDATA[<p>This weekend was the <a href="http://amsterdam.musichackday.org/2012/index.php?page=Main+page">Amsterdam</a> <a href="http://musichackday.org">Music Hack Day</a>, which I was lucky enough to go along to. Although the weather seemed way too nice to spend the entire weekend indoors staring at a keyboard, <a href="http://wiki.musichackday.org/index.php?title=Amsterdam_2012_Hacks">plenty of people</a> were just as silly as me. Some of the standouts were the Theremin-controlled autotuned karaoke machine, the Bunny Boogie (where a robotic rabbit can upload recordings to SoundCloud and then will dance along to the songs you play there) and a mashup which finds popular animated gifs which match the BPM of songs in your Spotify library and synchronise the two.</p>
 
 <p>I worked with <a href="http://twitter.com/#!a_kovalev">Sasha</a> on building an experiment we called &#8221;<a href="http://citysonar.herokuapp.com/">CitySonar</a>&#8221;. The concept is simple, though perhaps hard to describe in words. Let&#8217;s try anyway:</p>
 
@@ -180,42 +73,15 @@
 
 
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/01/csspecific-plugin-for-sublimetext/">CSSpecific Plugin for SublimeText</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-01T16:43:00-08:00" pubdate data-updated="true">Dec 1<span>st</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>A small post to announce a small plugin for <a href="http://www.sublimetext.com/">Sublime Text 2</a>. It&#8217;s called <a href="https://github.com/spadgos/sublime-csspecific"><strong>CSSpecific</strong></a> and simply, it calculates the specificity of your CSS selectors.</p>
+  <entry>
+    <title type="html"><![CDATA[CSSpecific plugin for SublimeText]]></title>
+    <link href="http://spadgos.github.com/blog/2011/12/01/csspecific-plugin-for-sublimetext/"/>
+    <updated>2011-12-01T16:43:00-08:00</updated>
+    <id>http://spadgos.github.com/blog/2011/12/01/csspecific-plugin-for-sublimetext</id>
+    <content type="html"><![CDATA[<p>A small post to announce a small plugin for <a href="http://www.sublimetext.com/">Sublime Text 2</a>. It&#8217;s called <a href="https://github.com/spadgos/sublime-csspecific"><strong>CSSpecific</strong></a> and simply, it calculates the specificity of your CSS selectors.</p>
 
 <h2>Specificiwhat?</h2>
 
@@ -257,42 +123,15 @@
 
 
 <p>Check it out on <a href="https://github.com/spadgos/sublime-csspecific">github</a>, let me know what you think, <a href="https://github.com/spadgos/sublime-csspecific/issues">send bug reports</a>, pull requests&#8230; all that &#8220;social coding&#8221; stuff.</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/11/30/a-soundcloud-plugin-for-jekyll-slash-octopress/">A SoundCloud Plugin for Jekyll/Octopress</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-11-30T23:22:00-08:00" pubdate data-updated="true">Nov 30<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>A little while ago, I started working at <a href="http://www.soundcloud.com/">SoundCloud</a> &#8211; it&#8217;s a really fun place to work, and very exciting given the scale and growth of the platform there. They&#8217;re so nice, they even put up an <a href="http://blog.soundcloud.com/2011/11/10/nick/">interview with me</a>!</p>
+  <entry>
+    <title type="html"><![CDATA[A SoundCloud plugin for Jekyll/Octopress]]></title>
+    <link href="http://spadgos.github.com/blog/2011/11/30/a-soundcloud-plugin-for-jekyll-slash-octopress/"/>
+    <updated>2011-11-30T23:22:00-08:00</updated>
+    <id>http://spadgos.github.com/blog/2011/11/30/a-soundcloud-plugin-for-jekyll-slash-octopress</id>
+    <content type="html"><![CDATA[<p>A little while ago, I started working at <a href="http://www.soundcloud.com/">SoundCloud</a> &#8211; it&#8217;s a really fun place to work, and very exciting given the scale and growth of the platform there. They&#8217;re so nice, they even put up an <a href="http://blog.soundcloud.com/2011/11/10/nick/">interview with me</a>!</p>
 
 <p>I&#8217;m working across the HTML5 projects which SoundCloud are producing, including the mobile site and the widget. The widget is the player which users can embed into their websites or blogs, and just recently we&#8217;ve released the new version which is entirely based on HTML5. <em>I should mention that <strong>very</strong> little of the code was produced by me, since it was done before I started, but now I&#8217;m working on bugfixes and further improvements.</em></p>
 
@@ -349,42 +188,15 @@
 
 
 <p>So there you have it. I&#8217;ll write more soon about the sidebar plugin, and perhaps I may have organised my code better by then and you&#8217;ll be able to get these plugins for yourself. Who knows??</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/11/20/a-new-beginning/">A New Beginning</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-11-20T14:01:00-08:00" pubdate data-updated="true">Nov 20<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Yep, it&#8217;s a new blog! Hooray!</p>
+  <entry>
+    <title type="html"><![CDATA[A new beginning]]></title>
+    <link href="http://spadgos.github.com/blog/2011/11/20/a-new-beginning/"/>
+    <updated>2011-11-20T14:01:00-08:00</updated>
+    <id>http://spadgos.github.com/blog/2011/11/20/a-new-beginning</id>
+    <content type="html"><![CDATA[<p>Yep, it&#8217;s a new blog! Hooray!</p>
 
 <p>The last blog was, to be kind, <em>crap</em>. It was something I&#8217;d just thrown together to get it working. I chose a standard off-the-shelf wordpress theme, and that was about the limit of the effort I spent getting it set up. For someone who writes about the web, it was an embarassment, really.</p>
 
@@ -395,42 +207,15 @@
 <p>Despite my comments about the stock-standardness of my previous blog, the current one is still using the default packaged theme, but I&#8217;ll get onto that shortly, I swear. I&#8217;ll also look into migrating (and perhaps vetting) the posts from the old blog too.</p>
 
 <p>Exciting times for a nerd.</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/11/01/sublime-text-and-jsdocs/">Sublime Text &amp; JSDocs</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-11-01T23:37:00-07:00" pubdate data-updated="true">Nov 1<span>st</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Recently, I’ve had one of those events in my professional life. They happen (for me) even less frequently than changing jobs. Yes, I have changed my preferred text editor. gasp!</p>
+  <entry>
+    <title type="html"><![CDATA[Sublime Text &amp; JSDocs]]></title>
+    <link href="http://spadgos.github.com/blog/2011/11/01/sublime-text-and-jsdocs/"/>
+    <updated>2011-11-01T23:37:00-07:00</updated>
+    <id>http://spadgos.github.com/blog/2011/11/01/sublime-text-and-jsdocs</id>
+    <content type="html"><![CDATA[<p>Recently, I’ve had one of those events in my professional life. They happen (for me) even less frequently than changing jobs. Yes, I have changed my preferred text editor. gasp!</p>
 
 <p>I’ve moved from <a href="http://www.activestate.com/komodo-edit">Komodo</a>, which is a very competent and extensible (with Javascript!) editor, to the new kid on the block, <a href="http://www.sublimetext.com/">Sublime Text 2</a>. Sublime is a product still in beta, but I can recommend it as being definitely stable enough for every day use.</p>
 
@@ -445,42 +230,15 @@
 <p>The last thing I want to mention is the fledgling, but fast-growing developer community around Sublime. As a tool for programmers, its been designed to be extended with plugins, written in Python. What’s even better is that there’s a package repository plugin called <a href="https://github.com/wbond/sublime_package_control">Package Control</a>, written by <a href="https://github.com/wbond">Will Bond</a>, that completely streamlines the plugin installation and upgrade process integrated directly into the editor. Plugins are hosted on Github or Bitbucket and you can pull the upgrades as their published. After installing that package (which you can do just by pasting a command into the integrated python shell..!), all the available packages are shown in a command palette, and are installed without even requiring a restart. Since the code for the plugins is on Github, it’s really easy to fork it and send in pull requests if you find a bug, too. I highly recommend it!</p>
 
 <p>And there’s just enough time for a quick little shout-out for one of my own plugins. If you’re writing Javascript or PHP with Sublime, you should totally install the <a href="http://github.com/spadgos/sublime-jsdocs">JSDocs plugin</a>. You can install it with the aforementioned Package Control plugin, or there’s instructions on the Github page. This plugin makes writing Javadoc-style comments a breeze by adding context-sensitive autocompletes, comment-aware linebreaking, and it even inspects your code to prefill <code>@param</code> and <code>@return</code> tags in a docblock. The readme file has much more information and many examples. If you run into any problems, leave me a note in the issue tracker and I’ll get right onto it!</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/09/22/converting-arguments-into-an-array/">Converting Arguments Into an Array</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-09-22T23:46:00-07:00" pubdate data-updated="true">Sep 22<span>nd</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I&#8217;ve been working on the previously-mentioned <a href="http://www.github.com/spadgos/myrtle">Myrtle</a> project, as well as its unit-testing sister project, <a href="http://www.github.com/spadgos/tyrtle">Tyrtle</a> (which will get further plugs soon&#8230;), and I kind of stumbled across this interesting little thing.</p>
+  <entry>
+    <title type="html"><![CDATA[Converting arguments into an array]]></title>
+    <link href="http://spadgos.github.com/blog/2011/09/22/converting-arguments-into-an-array/"/>
+    <updated>2011-09-22T23:46:00-07:00</updated>
+    <id>http://spadgos.github.com/blog/2011/09/22/converting-arguments-into-an-array</id>
+    <content type="html"><![CDATA[<p>I&#8217;ve been working on the previously-mentioned <a href="http://www.github.com/spadgos/myrtle">Myrtle</a> project, as well as its unit-testing sister project, <a href="http://www.github.com/spadgos/tyrtle">Tyrtle</a> (which will get further plugs soon&#8230;), and I kind of stumbled across this interesting little thing.</p>
 
 <p>In javascript, there&#8217;s a &#8220;magic&#8221; variable made available inside every function, called <code>arguments</code>. It appears to be an array at first glance, but it isn&#8217;t. Observe:</p>
 
@@ -632,42 +390,15 @@ Chrome 13       37814     2701    38180     40952
 
 
 <p>Please do <a href="http://jsperf.com/converting-arguments-to-an-array">run the tests</a> yourself (and <a href="http://jsperf.com/converting-arguments-to-an-array/2">here for version 2</a> which has the additional benchmarks). Let me know if I&#8217;ve forgotten a different method, or if I&#8217;ve stuffed up my tests somehow.</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/08/11/introducing-myrtle-a-javascript-mocking-framework/">Introducing Myrtle: A Javascript Mocking Framework</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-08-11T23:46:00-07:00" pubdate data-updated="true">Aug 11<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I&#8217;m writing to introduce a small project I&#8217;ve just put together. I call it <strong>Myrtle</strong> <em>(which I guess is some sort of play on words on the <a href="http://en.wikipedia.org/wiki/Mock_Turtle">Mock Turtle</a>)</em>, but in any case, it is a Javascript Mocking Framework!</p>
+  <entry>
+    <title type="html"><![CDATA[Introducing Myrtle: A Javascript Mocking Framework]]></title>
+    <link href="http://spadgos.github.com/blog/2011/08/11/introducing-myrtle-a-javascript-mocking-framework/"/>
+    <updated>2011-08-11T23:46:00-07:00</updated>
+    <id>http://spadgos.github.com/blog/2011/08/11/introducing-myrtle-a-javascript-mocking-framework</id>
+    <content type="html"><![CDATA[<p>I&#8217;m writing to introduce a small project I&#8217;ve just put together. I call it <strong>Myrtle</strong> <em>(which I guess is some sort of play on words on the <a href="http://en.wikipedia.org/wiki/Mock_Turtle">Mock Turtle</a>)</em>, but in any case, it is a Javascript Mocking Framework!</p>
 
 <p>The project code is available on <a href="https://github.com/spadgos/myrtle">Github</a>, or you can just grab <a href="https://raw.github.com/spadgos/myrtle/master/Myrtle.js">Myrtle.js</a> if you like.</p>
 
@@ -862,42 +593,15 @@ Chrome 13       37814     2701    38180     40952
 
 
 <p>So, like I said, the code is on <a href="https://github.com/spadgos/myrtle">Github</a>. Go have look and let me know what you think!</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2009/09/24/unix-timestamp-confusion/">Unix Timestamp Confusion</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2009-09-24T23:46:00-07:00" pubdate data-updated="true">Sep 24<span>th</span>, 2009</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>There seems to be quite some confusion when it comes to working with dates and Unix timestamps, especially when there are multiple timezones involved. I thought I would write up a bit of an explanation to help clarify the situation, and show some of the better ways to deal with this in PHP.</p>
+  <entry>
+    <title type="html"><![CDATA[Unix timestamp confusion]]></title>
+    <link href="http://spadgos.github.com/blog/2009/09/24/unix-timestamp-confusion/"/>
+    <updated>2009-09-24T23:46:00-07:00</updated>
+    <id>http://spadgos.github.com/blog/2009/09/24/unix-timestamp-confusion</id>
+    <content type="html"><![CDATA[<p>There seems to be quite some confusion when it comes to working with dates and Unix timestamps, especially when there are multiple timezones involved. I thought I would write up a bit of an explanation to help clarify the situation, and show some of the better ways to deal with this in PHP.</p>
 
 <p>First up, some background information:</p>
 
@@ -1029,165 +733,7 @@ Chrome 13       37814     2701    38180     40952
 <p>Remember that time is constant in the universe across earth, and that a Unix timestamp is a good-enough measure of that time, and that it has nothing to do with what your clock tells you. Changing your clock because of where you are on Earth doesn&#8217;t affect the passage of time, and therefore altering time to get the desired clock-time is the wrong way to do things. The only time you should be using arithmetic on a timestamp is when you are actually interested in a different point in time.</p>
 
 <p>Follow this basic guideline and you&#8217;ll avoid a lot of headaches when dealing with different timezones.</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
-<aside class="sidebar">
-  
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2012/06/01/soundclouds-stack-slides-from-fluentconf-and-sfjs/">SoundCloud&#8217;s Stack: Slides from FluentConf and SFJS</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/03/25/citysonar/">CitySonar</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2011/12/01/csspecific-plugin-for-sublimetext/">CSSpecific plugin for SublimeText</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2011/11/30/a-soundcloud-plugin-for-jekyll-slash-octopress/">A SoundCloud plugin for Jekyll/Octopress</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2011/11/20/a-new-beginning/">A new beginning</a>
-      </li>
-    
-  </ul>
-</section>
-
-<section>
-  
-  <iframe width="100%" height="450" scrolling="no" frameborder="no" src="http://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Fusers%2Fspadgos%2Ffavorites&amp;auto_play=false&amp;show_artwork=false&amp;color=ff7700"></iframe>
-</section>
-
-
-<section>
-  <h1>Github Repos</h1>
-  <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
-  </ul>
-  
-  <a href="https://github.com/spadgos">@spadgos</a> on Github
-  
-  <script type="text/javascript">
-    $.domReady(function(){
-        if (!window.jXHR){
-            var jxhr = document.createElement('script');
-            jxhr.type = 'text/javascript';
-            jxhr.src = '/javascripts/libs/jXHR.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(jxhr, s);
-        }
-
-        github.showRepos({
-            user: 'spadgos',
-            count: 5,
-            skip_forks: true,
-            target: '#gh_repos',
-            ignore: 'spadgos.github.com'.split(" ")
-        });
-    });
-  </script>
-  <script src="/javascripts/github.js" type="text/javascript"> </script>
-</section>
-
-
-<section>
-  <h1>Stack Overflow</h1>
-  <a href="http://stackoverflow.com/users/9021/nickf"
-    ><img src="http://stackoverflow.com/users/flair/9021.png" width="208" height="58" alt="Profile for nickf at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="Profile for nickf at Stack Overflow, Q&amp;A for professional and enthusiast programmers" /></a>
-  <ul id="so_answer">
-    <li class="loading">Loading recent answers&#8230;</li>
-  </ul>
-  <script type="text/javascript">
-    $.domReady(function(){
-      if (!window.jXHR){
-        var jxhr = document.createElement('script');
-        jxhr.type = 'text/javascript';
-        jxhr.src = '/javascripts/libs/jXHR.js';
-        var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(jxhr, s);
-      }
-
-      $.ajax({
-        type: 'jsonp',
-        jsonpCallback: 'jsonp',
-        url: 'http://api.stackoverflow.com/1.1/users/9021/answers'
-           + '?body=false'
-           + '&comments=false'
-           + '&method=get'
-           + '&pagesize=5'
-           + '&jsonp=cb'
-           + '&key=TPz4ZgIuDUiQCrMIEyBIPw'
-        , success: function(data) {
-          if (!data || !data.answers) { return; }
-          var i, fragment = '', t = $('#so_answer')[0], a, d;
-
-          fragment = '<li>Recent answers on Stack Overflow</li>';
-          for (i = 0; i < data.answers.length; ++i) {
-            a = data.answers[i];
-            // d = new Date(a.creation_date);
-            fragment += '<li><a href="http://stackoverflow.com/questions/' + a.question_id + '/' + a.answer_id + '#' + a.answer_id + '">' + a.title + '</a></li>';
-          }
-          t.innerHTML = fragment;
-        }
-      });
-    });
-  </script>
-</section>
-
-
-  
-</aside>
-
-    </div>
-  </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2012 - Nick Fisher -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-</p>
-
-</footer>
-  
-
-<script type="text/javascript">
-      var disqus_shortname = 'spadgos-gh';
-      
-        
-        var disqus_script = 'count.js';
-      
-    (function () {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    }());
-</script>
-
-
-
-
-
-
-
-
-
-
-
-</body>
-</html>
+</feed>

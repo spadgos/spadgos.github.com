@@ -1,0 +1,346 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>CSSpecific plugin for SublimeText - nickf on code</title>
+  <meta name="author" content="Nick Fisher">
+
+  
+  <meta name="description" content="A small post to announce a small plugin for Sublime Text 2. It&#8217;s called CSSpecific and simply, it calculates the specificity of your CSS &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://spadgos.github.com/blog/2011/12/01/csspecific-plugin-for-sublimetext">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="nickf on code" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-25824270-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">nickf on code</a></h1>
+  
+    <h2>Javascript and code nerdity</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">CSSpecific Plugin for SublimeText</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-01T16:43:00-08:00" pubdate data-updated="true">Dec 1<span>st</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>A small post to announce a small plugin for <a href="http://www.sublimetext.com/">Sublime Text 2</a>. It&#8217;s called <a href="https://github.com/spadgos/sublime-csspecific"><strong>CSSpecific</strong></a> and simply, it calculates the specificity of your CSS selectors.</p>
+
+<h2>Specificiwhat?</h2>
+
+<p>When two CSS selectors target the same element, one of them has to win, right? Deciding which one is the winner is a matter of detecting which is the <em>most specific</em>. You can read the full technical details of this in the <a href="http://www.w3.org/TR/css3-selectors/#specificity">CSS Spec</a>, but basically it works like this:</p>
+
+<p>A specificity score is 3 values. We&#8217;ll refer to these values as &#8220;a,b,c&#8221;.</p>
+
+<blockquote><p>A selector&#8217;s specificity is calculated as follows:</p>
+
+<ul>
+<li>count the number of ID selectors in the selector (= a)</li>
+<li>count the number of class selectors, attributes selectors, and pseudo-classes in the selector (= b)</li>
+<li>count the number of type selectors and pseudo-elements in the selector (= c)</li>
+<li>ignore the universal selector</li>
+</ul>
+</blockquote>
+
+<p>At the end, whichever has the highest score wins, reading left to right, <code>a &gt; b &gt; c</code>. Note that any number of lower-valued selectors never outvalues a higher valued selector. So, even a selector which had 1000 classes in it would be less specific than one which had a single id. <code>(0, 1000, 0) &lt; (1, 0, 0)</code></p>
+
+<h2>The plugin</h2>
+
+<p>So the plugin, when activated, reads all the CSS selectors from your file (even in HTML files), and collates them in a display panel alongside their score. For simplicity the score is presented as a single number: <code>a * 100 + b * 10 + c</code>, which means that if you DO have a selector with 1000 classes, this plugin will tell you that it has a higher score, but you know what? If you have a selector with more than 10 classes or elements, you got bigger problems, pal.</p>
+
+<h2>Examples</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="c">/* 001 */</span> <span class="nt">div</span>
+</span><span class='line'><span class="c">/* 010 */</span> <span class="nc">.active</span>
+</span><span class='line'><span class="c">/* 100 */</span> <span class="nf">#nav</span>
+</span><span class='line'><span class="c">/* 101 */</span> <span class="nf">#nav</span> <span class="o">&gt;</span> <span class="nt">ol</span>
+</span><span class='line'><span class="c">/* 012 */</span> <span class="nt">div</span> <span class="o">+</span> <span class="nt">a</span><span class="o">[</span><span class="nt">href</span><span class="o">]</span>
+</span><span class='line'><span class="c">/* 002 */</span> <span class="nt">a</span><span class="nd">:active</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Check it out on <a href="https://github.com/spadgos/sublime-csspecific">github</a>, let me know what you think, <a href="https://github.com/spadgos/sublime-csspecific/issues">send bug reports</a>, pull requests&#8230; all that &#8220;social coding&#8221; stuff.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Nick Fisher</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-01T16:43:00-08:00" pubdate data-updated="true">Dec 1<span>st</span>, 2011</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/11/30/a-soundcloud-plugin-for-jekyll-slash-octopress/" title="Previous Post: A SoundCloud plugin for Jekyll/Octopress">&laquo; A SoundCloud plugin for Jekyll/Octopress</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/03/25/citysonar/" title="next Post: CitySonar">CitySonar &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/06/01/soundclouds-stack-slides-from-fluentconf-and-sfjs/">SoundCloud's Stack: Slides from FluentConf and SFJS</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/25/citysonar/">CitySonar</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/01/csspecific-plugin-for-sublimetext/">CSSpecific plugin for SublimeText</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/30/a-soundcloud-plugin-for-jekyll-slash-octopress/">A SoundCloud plugin for Jekyll/Octopress</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/20/a-new-beginning/">A new beginning</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  
+  <iframe width="100%" height="450" scrolling="no" frameborder="no" src="http://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Fusers%2Fspadgos%2Ffavorites&amp;auto_play=false&amp;show_artwork=false&amp;color=ff7700"></iframe>
+</section>
+
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/spadgos">@spadgos</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'spadgos',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos',
+            ignore: 'spadgos.github.com'.split(" ")
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Stack Overflow</h1>
+  <a href="http://stackoverflow.com/users/9021/nickf"
+    ><img src="http://stackoverflow.com/users/flair/9021.png" width="208" height="58" alt="Profile for nickf at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="Profile for nickf at Stack Overflow, Q&amp;A for professional and enthusiast programmers" /></a>
+  <ul id="so_answer">
+    <li class="loading">Loading recent answers...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+      }
+
+      $.ajax({
+        type: 'jsonp',
+        jsonpCallback: 'jsonp',
+        url: 'http://api.stackoverflow.com/1.1/users/9021/answers'
+           + '?body=false'
+           + '&comments=false'
+           + '&method=get'
+           + '&pagesize=5'
+           + '&jsonp=cb'
+           + '&key=TPz4ZgIuDUiQCrMIEyBIPw'
+        , success: function(data) {
+          if (!data || !data.answers) { return; }
+          var i, fragment = '', t = $('#so_answer')[0], a, d;
+
+          fragment = '<li>Recent answers on Stack Overflow</li>';
+          for (i = 0; i < data.answers.length; ++i) {
+            a = data.answers[i];
+            // d = new Date(a.creation_date);
+            fragment += '<li><a href="http://stackoverflow.com/questions/' + a.question_id + '/' + a.answer_id + '#' + a.answer_id + '">' + a.title + '</a></li>';
+          }
+          t.innerHTML = fragment;
+        }
+      });
+    });
+  </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Nick Fisher -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'spadgos-gh';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://spadgos.github.com/blog/2011/12/01/csspecific-plugin-for-sublimetext/';
+        var disqus_url = 'http://spadgos.github.com/blog/2011/12/01/csspecific-plugin-for-sublimetext/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
