@@ -4,7 +4,7 @@
   <title><![CDATA[nickf on code]]></title>
   <link href="http://spadgos.github.com/atom.xml" rel="self"/>
   <link href="http://spadgos.github.com/"/>
-  <updated>2012-07-22T11:36:08-04:00</updated>
+  <updated>2012-08-30T11:41:25+02:00</updated>
   <id>http://spadgos.github.com/</id>
   <author>
     <name><![CDATA[Nick Fisher]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[SoundCloud's Stack: Slides from FluentConf and SFJS]]></title>
     <link href="http://spadgos.github.com/blog/2012/06/01/soundclouds-stack-slides-from-fluentconf-and-sfjs/"/>
-    <updated>2012-06-01T16:16:00-04:00</updated>
+    <updated>2012-06-01T16:16:00+02:00</updated>
     <id>http://spadgos.github.com/blog/2012/06/01/soundclouds-stack-slides-from-fluentconf-and-sfjs</id>
     <content type="html"><![CDATA[<p>This week, I&#8217;ve been at the <a href="http://fluentconf.com/fluent2012">Fluent Conference</a> in San Francisco. It&#8217;s O&#8217;Reilly&#8217;s first javascript conference, and it brought in some really large names in the field including Steve Souders, Brendan Eich, Ward Cunningham, Paul Irish, Lea Verou&#8230; and me.</p>
 
@@ -37,7 +37,7 @@
   <entry>
     <title type="html"><![CDATA[CitySonar]]></title>
     <link href="http://spadgos.github.com/blog/2012/03/25/citysonar/"/>
-    <updated>2012-03-25T19:44:00-04:00</updated>
+    <updated>2012-03-25T19:44:00+02:00</updated>
     <id>http://spadgos.github.com/blog/2012/03/25/citysonar</id>
     <content type="html"><![CDATA[<p>This weekend was the <a href="http://amsterdam.musichackday.org/2012/index.php?page=Main+page">Amsterdam</a> <a href="http://musichackday.org">Music Hack Day</a>, which I was lucky enough to go along to. Although the weather seemed way too nice to spend the entire weekend indoors staring at a keyboard, <a href="http://wiki.musichackday.org/index.php?title=Amsterdam_2012_Hacks">plenty of people</a> were just as silly as me. Some of the standouts were the Theremin-controlled autotuned karaoke machine, the Bunny Boogie (where a robotic rabbit can upload recordings to SoundCloud and then will dance along to the songs you play there) and a mashup which finds popular animated gifs which match the BPM of songs in your Spotify library and synchronise the two.</p>
 
@@ -79,7 +79,7 @@
   <entry>
     <title type="html"><![CDATA[CSSpecific plugin for SublimeText]]></title>
     <link href="http://spadgos.github.com/blog/2011/12/01/csspecific-plugin-for-sublimetext/"/>
-    <updated>2011-12-01T16:43:00-05:00</updated>
+    <updated>2011-12-01T16:43:00+01:00</updated>
     <id>http://spadgos.github.com/blog/2011/12/01/csspecific-plugin-for-sublimetext</id>
     <content type="html"><![CDATA[<p>A small post to announce a small plugin for <a href="http://www.sublimetext.com/">Sublime Text 2</a>. It&#8217;s called <a href="https://github.com/spadgos/sublime-csspecific"><strong>CSSpecific</strong></a> and simply, it calculates the specificity of your CSS selectors.</p>
 
@@ -129,7 +129,7 @@
   <entry>
     <title type="html"><![CDATA[A SoundCloud plugin for Jekyll/Octopress]]></title>
     <link href="http://spadgos.github.com/blog/2011/11/30/a-soundcloud-plugin-for-jekyll-slash-octopress/"/>
-    <updated>2011-11-30T23:22:00-05:00</updated>
+    <updated>2011-11-30T23:22:00+01:00</updated>
     <id>http://spadgos.github.com/blog/2011/11/30/a-soundcloud-plugin-for-jekyll-slash-octopress</id>
     <content type="html"><![CDATA[<p>A little while ago, I started working at <a href="http://www.soundcloud.com/">SoundCloud</a> &#8211; it&#8217;s a really fun place to work, and very exciting given the scale and growth of the platform there. They&#8217;re so nice, they even put up an <a href="http://blog.soundcloud.com/2011/11/10/nick/">interview with me</a>!</p>
 
@@ -194,7 +194,7 @@
   <entry>
     <title type="html"><![CDATA[A new beginning]]></title>
     <link href="http://spadgos.github.com/blog/2011/11/20/a-new-beginning/"/>
-    <updated>2011-11-20T14:01:00-05:00</updated>
+    <updated>2011-11-20T14:01:00+01:00</updated>
     <id>http://spadgos.github.com/blog/2011/11/20/a-new-beginning</id>
     <content type="html"><![CDATA[<p>Yep, it&#8217;s a new blog! Hooray!</p>
 
@@ -213,7 +213,7 @@
   <entry>
     <title type="html"><![CDATA[Sublime Text &amp; JSDocs]]></title>
     <link href="http://spadgos.github.com/blog/2011/11/01/sublime-text-and-jsdocs/"/>
-    <updated>2011-11-01T23:37:00-04:00</updated>
+    <updated>2011-11-01T23:37:00+01:00</updated>
     <id>http://spadgos.github.com/blog/2011/11/01/sublime-text-and-jsdocs</id>
     <content type="html"><![CDATA[<p>Recently, I’ve had one of those events in my professional life. They happen (for me) even less frequently than changing jobs. Yes, I have changed my preferred text editor. gasp!</p>
 
@@ -236,7 +236,7 @@
   <entry>
     <title type="html"><![CDATA[Converting arguments into an array]]></title>
     <link href="http://spadgos.github.com/blog/2011/09/22/converting-arguments-into-an-array/"/>
-    <updated>2011-09-22T23:46:00-04:00</updated>
+    <updated>2011-09-22T23:46:00+02:00</updated>
     <id>http://spadgos.github.com/blog/2011/09/22/converting-arguments-into-an-array</id>
     <content type="html"><![CDATA[<p>I&#8217;ve been working on the previously-mentioned <a href="http://www.github.com/spadgos/myrtle">Myrtle</a> project, as well as its unit-testing sister project, <a href="http://www.github.com/spadgos/tyrtle">Tyrtle</a> (which will get further plugs soon&#8230;), and I kind of stumbled across this interesting little thing.</p>
 
@@ -396,7 +396,7 @@ Chrome 13       37814     2701    38180     40952
   <entry>
     <title type="html"><![CDATA[Introducing Myrtle: A Javascript Mocking Framework]]></title>
     <link href="http://spadgos.github.com/blog/2011/08/11/introducing-myrtle-a-javascript-mocking-framework/"/>
-    <updated>2011-08-11T23:46:00-04:00</updated>
+    <updated>2011-08-11T23:46:00+02:00</updated>
     <id>http://spadgos.github.com/blog/2011/08/11/introducing-myrtle-a-javascript-mocking-framework</id>
     <content type="html"><![CDATA[<p>I&#8217;m writing to introduce a small project I&#8217;ve just put together. I call it <strong>Myrtle</strong> <em>(which I guess is some sort of play on words on the <a href="http://en.wikipedia.org/wiki/Mock_Turtle">Mock Turtle</a>)</em>, but in any case, it is a Javascript Mocking Framework!</p>
 
@@ -599,7 +599,7 @@ Chrome 13       37814     2701    38180     40952
   <entry>
     <title type="html"><![CDATA[Unix timestamp confusion]]></title>
     <link href="http://spadgos.github.com/blog/2009/09/24/unix-timestamp-confusion/"/>
-    <updated>2009-09-24T23:46:00-04:00</updated>
+    <updated>2009-09-24T23:46:00+02:00</updated>
     <id>http://spadgos.github.com/blog/2009/09/24/unix-timestamp-confusion</id>
     <content type="html"><![CDATA[<p>There seems to be quite some confusion when it comes to working with dates and Unix timestamps, especially when there are multiple timezones involved. I thought I would write up a bit of an explanation to help clarify the situation, and show some of the better ways to deal with this in PHP.</p>
 
