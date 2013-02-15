@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>SoundCloud</title>
+
+    <meta name="author" content="Nick Fisher">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/reveal.min.css">
+    <link rel="stylesheet" href="css/sc.css">
+    <link rel="stylesheet" href="css/theme/soundcloud.css" id="theme">
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+    <script>
+      document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+    </script>
+
+    <!--[if lt IE 9]><style>* { font-family: "Comic Sans" !important; }</style><![endif]-->
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+
+        <section data-state="title-slide">
+          <h1>Going full craz</h1>
+          <img src="cloud.png" width="15%">
+          <p>
+            Nick Fisher @spadgos
+          </p>
+        </section>
+        <section>
+          <h2>Full craz?</h2>
+          <a href="http://backstage.soundcloud.com/2012/06/building-the-next-soundcloud/" style="font-size:90%">
+            <nobr>backstage.soundcloud.com/2012/06/building-the-next-soundcloud/</nobr>
+          </a><br>
+          <img class="fragment" src="fullcraz.png" width="80%">
+          <div class="fragment">
+            <img src="ayfkm.png">
+            <br>Hacker news...
+          </div>
+        </section>
+        <section>
+          <h2>MLOC?</h2>
+          <img class="fragment" src="cloc.png" style="padding: 15px; background-color:black; border-radius: 5px">
+          <p class="fragment">0.03 MLOC. Whatevs.</p>
+        </section>
+        <section>
+          <h1>Coming up</h1>
+          <h3>Asynchronous programming</h3>
+          <h3>Data management on the client</h3>
+          <h3>Performance war story</h3>
+        </section>
+
+        <section data-state="title-slide">
+          <h1>Asynchronous Programming</h1>
+          <h3 class="fragment">Callback Hell</h3>
+        </section>
+        <section data-state="code">
+          <h2>This is callback hell</h2>
+          <pre><code>fs.readdir(source, function(err, files) {
+  if (err) {
+    console.log('Error finding files: ' + err)
+  } else {
+    files.forEach(function(filename, fileIndex) {
+      console.log(filename)
+      gm(source + filename).size(function(err, values) {
+        if (err) {
+          console.log('Error identifying file size: ' + err)
+        } else {
+          console.log(filename + ' : ' + values)
+          aspect = (values.width / values.height)
+          widths.forEach(function(width, widthIndex) {
+            height = Math.round(width / aspect)
+            this.resize(width, height)
+              .write(filename, function(err) {
+                if (err) {
+                  console.log('Error writing file: ' + err)
+                }
+
+              });
+          }.bind(this))
+        }
+      })
+    })
+  }
+})</code></pre>
+          <cite>Source: <a href="http://callbackhell.com">callbackhell.com</a></cite>
+        </section>
+
+        <section>
+          <h2>Promises</h2>
+          <img src="obama.jpg">
+        </section>
+        <section>
+          <h2>Which implementation?</h2>
+          <ul>
+            <li><a href="https://github.com/kriskowal/q">Q</a></li>
+            <li><a href="https://github.com/tildeio/rsvp.js">rsvp.js</a></li>
+            <li><a href="https://github.com/cujojs/when">when</a></li>
+            <li><a href="http://api.jquery.com/category/deferred-object/">jQuery.Deferred</a></li>
+          </ul>
+          <br>
+          <cite>Domenic Denicola <a href="https://gist.github.com/domenic/3889970">You're Missing the Point of Promises</a></cite>
+        </section>
+        <section>
+          <h2>The Promise Contract</h2>
+          <p><small><i>(The promise promise?)</i></small></p>
+          <ol>
+            <li>There is <em>one</em> resolution or rejection.</li>
+            <li>Callbacks are executed <em>once</em>.</li>
+            <li>Promises remember their state.</li>
+          </ol>
+          <cite>Source: <a href="http://howtonode.org/promises">howtonode.org/promises</a>.</cite>
+        </section>
+        <section>
+          <h2>Basic interface</h2>
+          <ul>
+            <li>Adding callbacks:
+              <ul>
+                <li><code>.done()</code> <code>.fail()</code> <code>.always()</code></li>
+              </ul>
+            </li>
+            <li>Modifying state:
+              <ul>
+                <li><code>.resolve()</code> <code>.reject()</code></li>
+              </ul>
+            </li>
+            <li>
+              All return <code>this</code> for chaining.
+            </li>
+          </ul>
+        </section>
+
+        <section data-state="code">
+          <h2>Warning!</h2>
+          <img src="abandon-hope.jpg">
+          <h2>Code ahead.</h2>
+        </section>
+        <section data-state="code">
+          <pre><code>function sendRequest(url) {
+  return $.get(url).fail(function () {
+    logError('something went wrong');
+  });
+}</code></pre>
+<pre class="fragment"><code>function loadUser(id) {
+  var deferred = $.Deferred();
+  sendRequest('users/' + id)
+    .done(function (userData) {
+      deferred.resolve(new User(userData));
+    })
+    .fail(deferred.reject);
+  return deferred;
+}</code></pre>
+<pre class="fragment"><code>function showUserDetails(id) {
+  loadUser(id)
+    .done(function (user) {
+      someView.render(user);
+    })
+    .fail(errorView.render);
+}</code></pre>
+        </section>
+
+        <section data-state="code">
+          <h2>Extension</h2>
+          <p class="fragment">Caching AJAX requests</p>
+          <pre class="fragment"><code>var cache = {};
+function sendRequest(url) {
+  if (!cache[url]) {
+    cache[url] = $.get(url).fail(logError);
+  }
+  return cache[url];
+}</code></pre>
+<p class="fragment">Mocking for tests</p>
+<pre class="fragment"><code>function sendRequest(url) {
+  return $.Deferred().resolve({ id: 123, name: 'Test user' });
+}</code></pre>
+        </section>
+
+        <section data-state="code">
+          <h2>More than AJAX</h2>
+          <pre class="fragment"><code>function login() {
+  var deferred = $.Deferred();
+  if (isLoggedIn) {
+    deferred.resolve(); // done already!
+  } else {
+    showFacebookPopup(); // this would have its own flow
+    loginCallback = function (success) {
+      deferred[success ? 'resolve' : 'reject']();
+    };
+  }
+  return deferred;
+}</code></pre>
+        </section>
+        <section data-state="code">
+          <h2>In use...</h2>
+<pre><code>function followUser(id) {
+  var deferred = $.Deferred();
+  login()
+    .fail(deferred.reject)
+    .done(function () {
+      $.post('users/' + id + '/follow')
+        .done(deferred.resolve)
+        .fail(deferred.reject)
+    });
+  return deferred;
+}</code></pre>
+          <button class="fragment sc-button sc-button-large sc-button-follow" onclick="this.classList.toggle('sc-button-selected')">Follow</button>
+<pre class="fragment"><code>followButton.on('click', function () {
+  this.setState('selected', true);
+  followUser(this.model.id).fail(function () {
+    this.setState('selected', false);
+  }.bind(this));
+});
+</code></pre>
+        </section>
+        <section data-state="title-slide">
+          <h3>Summing</h3>
+          <h3 class="fragment">Up</h3>
+        </section>
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+        <section data-state="title-slide">
+          <h1>Data Management</h1>
+        </section>
+
+        <section>
+          <h2>The long running app</h2>
+          <ul>
+            <!-- <li class="fragment">New for many web devs</li> -->
+            <li class="fragment">Challenges
+              <ul class="fragment">
+                <li>Memory leaks</li>
+                <li>Performance</li>
+              </ul>
+            </li>
+            <li class="fragment">Opportunities
+              <ul class="fragment">
+                <li>Faster loading</li>
+                <li>Better experience</li>
+              </ul>
+            </li>
+          </ul>
+        </section>
+
+        <section data-state="code">
+          <h2>Leaks</h2>
+          <pre class="fragment"><code>var cache = {};
+function sendRequest(url) {
+  if (!cache[url]) {
+    cache[url] = $.get(url).fail(logError);
+  }
+  return cache[url];
+}</code></pre>
+        </section>
+
+        <section>
+          <h2>Sharing is caring</h2>
+          <img src="sharing.jpg">
+        </section>
+
+        <section>
+          <h2>Many views, one model</h2>
+          <div style="position: relative">
+            <img src="listen.png">
+            <img src="listen-highlighted.png" style="position: absolute; top:0; left: 1px" class="fragment">
+          </div>
+        </section>
+
+        <section>
+          <h2>Identity map</h2>
+          <ul>
+            <li>One model = one instance, everywhere</li>
+            <li>Access by overriding constructor</li>
+          </ul>
+          <pre class="fragment"><code
+>var store = {};
+function User(attrs) {
+  var id = attrs.id;
+  if (!store[id]) {
+    store[id] = this;
+    this.initialize();
+  }
+  return store[id];
+}</code></pre>
+          <pre class="fragment"><code
+>var userA = new User({id: 123}),
+    userB = new User({id: 123});
+userA === userB; // true</code></pre>
+          <cite>Martin Fowler: <a href="http://martinfowler.com/eaaCatalog/identityMap.html">Patterns of Enterprise Application Architecture</a></cite>
+        </section>
+        <section>
+          <h2>Wait a second</h2>
+          <h3>Isn't this a massive memory leak?</h3>
+        </section>
+        <section data-state="code">
+          <h2>Yeah<span class="fragment">, so...</span></h2>
+          <pre class="fragment"><code
+>var store = {},
+    counts = {};
+
+function User(id) {
+  if (!store[id]) {
+    store[id] = this;
+    counts[id] = 0;
+    this.initialize();
+  }
+  ++counts[id];
+  return store[id];
+}
+</code></pre>
+<pre class="fragment"><code
+>User.prototype.release = function () {
+  --counts[this.id];
+}</code></pre>
+          <small class="fragment">This is a <em>slight</em> simplification...</small>
+        </section>
+
+        <!-- segue into this with performance -->
+        <section data-state="title-slide">
+          <h1>My waveforms</h1>
+          <h3 class="fragment">Let me show you them</h3>
+        </section>
+        <section>
+          <h2>The situation</h2>
+          <div style="line-height: 0; padding: 0; background: -webkit-linear-gradient(#303030, #808080); -webkit-transition: all 500ms ease-in-out;" onclick="this.style.padding=this.style.padding=='15px'?0:'15px'"><img src="waveform.png" style="margin: 0"></div>
+        </section>
+        <section>
+          <h2>New Waveforms</h2>
+          <p>New style: sharp, no anti-aliasing.</p>
+          <img src="new-waveform.png">
+          <div class="fragment">
+            <p>New playlist style</p>
+            <img src="playlist.png.png">
+          </div>
+          <div class="fragment">
+            <p>Flexible</p>
+            <img src="now-playing.png" style="width: 70%">
+          </div>
+        </section>
+        <section>
+          <h2>Solution:</h2>
+          <h3 class="fragment">Canvas!</h3>
+          <h2 class="fragment">Problem:</h2>
+          <h3 class="fragment">Data!</h3>
+        </section>
+        <section>
+          <h2>Solution:</h2>
+          <h3 class="fragment">Images as data source</h3>
+          <h2 class="fragment">Problem:</h2>
+          <h3 class="fragment">Performance!</h3>
+        </section>
+        <section>
+          <h2>Dubstep fans</h2>
+          <img src="dubstep.png">
+          <img class="fragment" src='ayfkm.png' style="position: absolute; width: 30%; top: 25%; left: 35%">
+          <p class="fragment">Rendering time: <b>1352ms</b></p>
+        </section>
+        <section>
+          <h2>Gradual improvements</h2>
+          <ul>
+            <li>Most efficient detection algorithm</li>
+            <li>Caching scaled images</li>
+            <li>Typed Arrays</li>
+            <li><strike>WebWorkers</strike></li>
+          </ul>
+        </section>
+        <section>
+          <h2>Breakthrough realisation:</h2>
+          <h3 class="fragment">Who gives a crap anyway?</h3>
+          <img class="fragment" src="dubstep.png">
+        </section>
+        <section>
+          <h2>Still kept improving</h2>
+          <p>Move calculation to the back end</p>
+          <p>Ported algorithm to Go</p>
+          <p>Front end receives JSON, everyone happy</p>
+        </section>
+        <section>
+          <h2>End result</h2>
+          <p class="fragment">Before: <b>1352ms</b></p>
+          <p class="fragment">After: <b>10ms</b></p>
+          <img class="fragment" src="rainbows.png">
+        </section>
+        <section data-state="title-slide">
+          <h1>THE END</h1>
+          <h3>Nick Fisher / @spadgos</h3>
+        </section>
+
+      </div>
+
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.min.js"></script>
+
+    <script>
+
+
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: false,
+        // Display a presentation progress bar
+        progress: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+        // Enable the slide overview mode
+        overview: true,
+        // Vertical centering of slides
+        center: true,
+        // Loop the presentation
+        loop: false,
+        // Change the presentation direction to be RTL
+        rtl: false,
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+        // Apply a 3D roll to links on hover
+        rollingLinks: false,
+        // Transition style
+        transition: 'linear', // default/cube/page/concave/zoom/linear/fade/none
+
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+          // { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+        ]
+      });
+
+    </script>
+
+  </body>
+</html>
