@@ -108,5 +108,5 @@ stackoverflow_api_key: TPz4ZgIuDUiQCrMIEyBIPw
 # SoundCloud Widget
 
 soundcloud_type: favorites  # one of groups, users, favorites, sets, apps, tracks
-soundcloud_id: spadgos        # the id of the group, user, set, etc... usernames can be used too
+soundcloud_id: 6431392        # the id of the group, user, set, etc...
 soundcloud_title:

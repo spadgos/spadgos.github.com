@@ -22,13 +22,13 @@ Here's the most basic usage: a resource type (`users`, `favorites`, `groups`, `p
 
 {% raw %}
 ```
-{% soundcloud favorites spadgos %}
+{% soundcloud favorites 6431392 %}
 ```
 {% endraw %}
 
-{% soundcloud favorites spadgos %}
+{% soundcloud favorites 6431392 %}
 
-There are more options, as described in the [widget documentation][widgetdocs]. *The documentation hasn't yet been updated for the new widget, and not all options there have been implemented yet. If there's one which doesn't work which you really want, let us know and we can work on it!*
+There are more options, as described in the [widget documentation][widgetdocs].
 
 {% raw %}
 ```
