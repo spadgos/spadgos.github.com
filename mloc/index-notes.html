@@ -41,6 +41,9 @@
             Nick Fisher @spadgos
           </p>
           <br><a href="http://spadgos.github.com/mloc">spadgos.github.com/mloc</a>
+          <aside class="notes">
+            talk about new soundcloud, what it is, what our (public) numbers on the site are, allows anyone to upload the music they've created and the sounds they've recorded
+          </aside>
         </section>
         <section>
           <h2>Full craz?</h2>
@@ -52,6 +55,12 @@
             <img src="ayfkm.png">
             <br>Hacker news...
           </div>
+          <aside class="notes">
+            wrote blog post, hacker news said this, and i was like<br>
+            <br>why keep it simple? because it's hard, and it often isn't done well. breaks a lot of existing models for web apps
+            <br>have we got all the answers? no, but we have learnt some things which worked nicely and some which didn't
+            <br>that's what I'll be talking about today
+          </aside>
         </section>
         <section>
           <h2>MLOC?</h2>
@@ -68,6 +77,9 @@
         <section data-state="title-slide">
           <h1>Asynchronous Programming</h1>
           <h3 class="fragment">Callback Hell</h3>
+          <aside class="notes">
+            This is something which is often brought up as a pain point for large applications.
+          </aside>
         </section>
         <section data-state="code">
           <h2>This is callback hell</h2>
@@ -99,11 +111,19 @@
   }
 })</code></pre>
           <cite>Source: <a href="http://callbackhell.com">callbackhell.com</a></cite>
+          <aside class="notes">
+            This is NodeJS, applies equally to browser JS too: lots of events, UI AJAX, or non-blocking Node. The reason this is an issue, beginners/intermediate this is a natural solution to the problem of nested async calls.
+            The good news is that there are plenty of different ways to address it, but I'll just discuss what we use.
+          </aside>
         </section>
 
         <section>
           <h2>Promises</h2>
           <img src="obama.jpg">
+          <aside class="notes">
+            (futures, eventuals, or deferreds), are not a new concept. 1970s
+            A promise is simply a way of interacting with an asynchronous action. The action can be completed at some point, or it might fail. In practice, it is essentially a callback aggregator, where any number of callbacks can be added to a queue to be executed in the event or success or failure.<br><br>
+          </aside>
         </section>
         <section>
           <h2>Which implementation?</h2>
@@ -115,6 +135,9 @@
           </ul>
 
           <p class="fragment"><br><br>Important reading: <a href="http://domenic.me/2012/10/14/youre-missing-the-point-of-promises/">You're Missing the Point of Promises</a><br>Domenic Denicola<br><small>domenic.me/2012/10/14/youre-missing-the-point-of-promises</small></p>
+          <aside class="notes">
+            There are many implementations for JS. These 3 are all excellent and fulfill the CommonJS spec, whereas jQuery's is broken and doesn't cover some of the more powerful use cases for promises. You can read more about this in Dom's gist. Guess which one we're using? The good news is that the basic parts of promises which it does do can give you some really great benefits, and I'll talk about those. Just remember that promises can do a lot more than what I'm showing you.
+          </aside>
         </section>
         <section>
           <h2>The Promise Contract</h2>
@@ -125,6 +148,9 @@
             <li>Promises remember their state.</li>
           </ol>
           <cite>Source: <a href="http://howtonode.org/promises">howtonode.org/promises</a>.</cite>
+          <aside class="notes">
+            2. Important to know that callbacks added after the deferred are resolved or rejected are executed immediately
+          </aside>
         </section>
         <section>
           <h2>Basic interface</h2>
@@ -143,6 +169,9 @@
               All return <code>this</code> for chaining.
             </li>
           </ul>
+          <aside class="notes">
+            In browser programming, the most common example of an asynchronous action is the AJAX request. It takes some amount of time, it might complete successfully, it might be cancelled by user interaction or the server might not respond how we wanted, for example, with a 500 or 404 status. By using promises here, it means that individual, separate parts of your application can react to either success or failure without knowing about other components and the callbacks they have attached.
+          </aside>
         </section>
 
         <section data-state="code">
@@ -188,6 +217,11 @@ function sendRequest(url) {
 <pre class="fragment"><code>function sendRequest(url) {
   return $.Deferred().resolve({ id: 123, name: 'Test user' });
 }</code></pre>
+        <aside class="notes">
+          Saying before, promises remember their state.
+          - when this is called for the second/third time, that request might still be going, or it might have failed, or anything, it doesn't matter because the interface is exactly the same.
+          - Tests: mock out the async parts to make your tests run synchronously
+        </aside>
         </section>
 
         <section data-state="code">
@@ -204,6 +238,9 @@ function sendRequest(url) {
   }
   return deferred;
 }</code></pre>
+          <aside class="notes">
+            Think about a login process. It's asynchronous to your program flow, but not just because of AJAX - the time the user spends entering their details, or clicking on the forgot password link or whatever, they're all part of a single action which can result in either success or failure.
+          </aside>
         </section>
         <section data-state="code">
           <h2>In use...</h2>
@@ -226,10 +263,17 @@ function sendRequest(url) {
   }.bind(this));
 });
 </code></pre>
+          <aside class="notes">
+            This is an action which also requires the user to be logged in, so there's two nested asynchronous flows here. Start with login: what it does, how it does it, or even if it's already done is completely meaningless here, but if it fails, we know we can't continue.<br>
+            Added benefit here is that the button can react optimistically, changing to the 'selected' state immediately. If the request fails for whatever reason, it can switch back to the previous state then.<br>
+          </aside>
         </section>
         <section data-state="title-slide">
           <h3>Summing</h3>
           <h3 class="fragment">Up</h3>
+          <aside class="notes">
+            This style of coding makes it really easy to work with asynchronous flows, even when it's nested several layers deep, and with its clean interface, making a responsive UI which is agnostic to the business logic underneath is simple.
+          </aside>
         </section>
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
         <section data-state="title-slide">
@@ -253,6 +297,9 @@ function sendRequest(url) {
               </ul>
             </li>
           </ul>
+          <aside class="notes">
+            <p>This is something many webdevs coming from a 'more traditional' ruby/php background don't need to deal with very much. One request = one page and everything is cleaned up afterwards.</p>
+          </aside>
         </section>
 
         <section data-state="code">
@@ -264,11 +311,19 @@ function sendRequest(url) {
   }
   return cache[url];
 }</code></pre>
+          <aside class="notes">
+            <p>how much of a problem it is is individual to your app, depending on how long your code will be running for, and the amount of data you're dealing with.</p>
+            <p> SoundCloud sessions can go many hours without a refresh, and we pull in lots of data via AJAX, so something like this would very quickly kill your browser. However, in other applications, this might actually be very efficient if you only need to make a couple dozen requests in the lifespan of the app. I've seen one client-side application where it never throws away references to the entire page of DOM elements, and that has worked out fine, since there were only a limited number of pages needed for that app.</p>
+
+            <p>code from before, there is an obvious ML here, since the requests along with the full data of each response is stored for the life of the program.</p>
+          </aside>
         </section>
 
         <section>
           <h2>Sharing is caring</h2>
           <img src="sharing.jpg">
+          <aside class="notes">
+            Depending on how you structure your app, you will almost definitely have some views of the same data. Think about a page which might list products, and then when you click through you get a details page. These two pages both show a view of the same data, just in different formats. If they were to be fetching their own data that would be grossly inefficient, so we need to find a way for them to share.
         </section>
 
         <section>
@@ -335,7 +390,9 @@ function User(id) {
         <section>
           <h2>The situation</h2>
           <div style="line-height: 0; padding: 0; background: -webkit-linear-gradient(#303030, #808080); -webkit-transition: all 500ms ease-in-out;" onclick="this.style.padding=this.style.padding=='15px'?0:'15px'"><img src="waveform.png" style="margin: 0"></div>
-
+          <aside class="notes">
+            these are how waveforms look on classic SC -- and it's actually just a transparent PNG with a gradient underneath.
+          </aside>
         </section>
         <section>
           <h2>New Waveforms</h2>
@@ -355,18 +412,28 @@ function User(id) {
           <h3 class="fragment">Canvas!</h3>
           <h2 class="fragment">Problem:</h2>
           <h3 class="fragment">Data!</h3>
+          <aside class="notes">
+            describe here about how the images are the only information we have
+          </aside>
         </section>
         <section>
           <h2>Solution:</h2>
           <h3 class="fragment">Images as data source</h3>
           <h2 class="fragment">Problem:</h2>
           <h3 class="fragment">Performance!</h3>
+          <aside class="notes">
+            describe the basic process of reading, writing: put image in canvas, read the pixel data to find the waveform heights, resample to the desired size, draw to a new canvas<br>
+            works great, until you have lots of waveforms to render. not initially a problem, but then we allowed people to make sets of any tracks.
+          </aside>
         </section>
         <section>
           <h2>Dubstep fans</h2>
           <img src="dubstep.png">
           <img class="fragment" src='ayfkm.png' style="position: absolute; width: 30%; top: 25%; left: 35%">
           <p class="fragment">Rendering time: <b>1352ms</b></p>
+          <aside class="notes">
+            might be hard to see, but there's (440, 178, 146 = 746) tracks here. There's more sets off-screen too. This absolutely killed all browsers.
+          </aside>
         </section>
         <section>
           <h2>Gradual improvements</h2>
@@ -376,11 +443,18 @@ function User(id) {
             <li>Typed Arrays</li>
             <li><strike>WebWorkers</strike></li>
           </ul>
+          <aside class="notes">
+            - webworkers seemed like a good way to improve the performance here: running in a different thread, and able to 'divide and conquer' between multiple workers. Issues were a severe memory leak in Chromium/V8 (now fixed?), and the time to spin up the workers actually resulted in worse performance with a lot more complexity.
+          </aside>
         </section>
         <section>
           <h2>Breakthrough realisation:</h2>
           <h3 class="fragment">Who gives a crap anyway?</h3>
           <img class="fragment" src="dubstep.png">
+          <aside class="notes">
+            If the waveform is going to be less than 6 pixels wide, then it doesn't matter what it actually looks like, so just make it up.
+            90% performance improvement.
+          </aside>
         </section>
         <section>
           <h2>Still kept improving</h2>
@@ -396,6 +470,9 @@ function User(id) {
           <p class="fragment">Before: <b>1352ms</b></p>
           <p class="fragment">After: <b>10ms</b></p>
           <img class="fragment" src="rainbows.png">
+          <aside class="notes">
+            Lesson here: think about how to cheat. What we do as engineers often focuses on what is correct, ignoring whether that is actually important, or even better. Sometimes you have to give up and think of a completely different approach.
+          </aside>
         </section>
         <section data-state="title-slide">
           <h1>THE END</h1>
