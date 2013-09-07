@@ -1,0 +1,262 @@
+---
+layout: post
+title: "Modular everywhere: using RequireJS for standalone libraries"
+date: 2013-09-01 20:06
+comments: true
+categories: 
+---
+
+Modular code is great. For both development and ongoing maintainence, it brings you many benefits, however most discussion in this area is focussed on writing modular applications. I want to talk about using modular code in all parts of your development, in particular when developing a standalone library. The most popular library for client-side modules is [RequireJS][requirejs], so I will focus on that.
+
+## Case study
+
+A few months ago, I closed a long-standing issue on a unit test framework I built, called [Tyrtle][tyrtle]: break the source into more manageable pieces. The code had grown to almost 1500 lines and it was getting very difficult to work on. After spending a day getting it all together, in the end I had a much simpler project which was a lot more maintainable, at the cost of a couple more kilobytes. These are some things I'd recommend from my experience: there's definitely different ways to achieve the same effect, or even maybe some better practices out there, but this is what I've found so far.
+
+## Some important questions
+
+### Should I use modules?
+
+It depends. If your code is of a certain size (upwards of ~600 lines), then you could probably get some benefit separating the code into modules in individual files. But below this, you have to consider that it does introduce some overhead.
+
+Though RequireJS is quite a large library, the author, [James Burke][jrb] has thankfully produced a minimal library which provides the same interface but just a small subset of features, which will still be fine for our purposes. This is called [almond][almond] and it's only 2kb after minification. If 2kb is too significant a percentage of your library's size, then you probably should stick to a single file.
+
+### Do I check in the compiled library?
+
+This is up to you, and there are differing opinions here. My opinion on this is that you should.
+
+In theory, you should be able to put your whole project on Github with a nice Makefile and README and let everyone build it for themselves, but in reality, that's more effort than most people are willing to invest, so most libraries provide a simple ready-to-go version somewhere in the repo.
+
+*When* exactly you run the build and check in the compiled version is up to you. Some libraries will do it for every commit, others only update the precompiled version when there's an officially tagged release. If you go with updating on each commit, make sure your users know that file is not necessarily a stable version to use.
+
+You should also decide now where the compiled version of your library will live. Sometimes it's just in the root, other times it's put into a subdirectory (named `dist`, for example), especially if there are a few different versions included in each build.
+
+Having the built library in the repository itself will be useful if you want your library to be used with client-side package managers such as Bower.
+
+The arguments against checking in the built library are all quite valid: in general, it is considered bad practice to check in build artefacts; and it increases confusion for other developers wanting to contribute. You will just need to weigh the ease-of-use of your library against these concerns. If you did want to avoid checking in build artefacts, yet still provide a simple version for your users, one suggestion would be to create another repository for stable releases, tailored to a particular package manager.
+
+### Application structure
+
+Put all your source code for the library itself into a subdirectory, called `src` or similar. All other code, including the build configuration and tests all live outside, in their own directories (`/build`, `/tests`) or in the root if there's only one or two files.
+
+Splitting up the source files into directories can follow the same guidelines you'd use for any other project, but unless you have a very large number of modules, it is unlikely you'll need to go any deeper than just `/src`.
+
+### AMD? CommonJS?
+
+I recommend CommonJS. For the code to run in the browser, you'll need to use AMD modules, but converting to AMD is simple (covered below), and lets you avoid writing meaningless boilerplate. So, just like a nodejs module, just use `require`, `module` or `exports` as if they were available in scope.
+
+```javascript
+var someModule = require('someModule');
+
+module.exports = someModule.extend();
+```
+
+## Get the libraries
+
+Obviously in building a project with RequireJS should start with bringing in the library. Install it with [npm][npm] but make sure it's in your `package.json` file by using the `--save` flag:
+
+```bash
+$ npm install --save requirejs
+```
+
+When you install this, it will create a link to a binary of `r.js` as `node_modules/.bin/r.js`. r.js is RequireJS's command line tool for converting and combining files.
+
+We'll also need almond, so [grab the library][almond] and put it into `/vendor`. We'll come back to this later.
+
+## Write modular!
+
+Start developing your library (or converting your existing one), putting each logical module of code into its own file. When there's an interdependency, you specifically import the modules you need. When it comes time to run or deploy your code, you'll need to glue it back together.
+
+## Automating the build
+
+The overall goal here is to make your life easier, and as every good programmer knows, the key to an easy life is automation, so we'll configure as we go. There's a ton of systems you can choose for automation, including Makefiles, Cakefiles, Rakefiles, Jakefiles, GruntJS and more. For what we need, I recommend using a Makefile. It might not be the most intuitive interface, but it's very powerful and could win purely on ubiquity. With a good Makefile, your project's build instructions should be "Run make", and never "Install the node modules, then the front end modules, then make sure you have proper build tool library, then...".
+
+*Warning: I'm a novice at using Makefiles, but this is what knowledge I was able to scrape together. If you see something wrong, or non-idiomatic, drop me a line in the comments.*
+
+## Better living through Makefiles
+
+Create a file in your directory root and name it `Makefile` (with no extension). A Makefile is a text file which defines a number of build 'targets', each of which could depend on different targets first. Each then lists the instructions for making that target, for example copying files or compiling code. In general, the target is the path of a file - typically something which is created by that part of the build; otherwise any label can be given to a target. This is called a dummy target. If the target is a file and it exists on the file system and is up to date, then that step will be skipped.
+
+To execute a target, you run `make [target]`, eg: `make build`, `make clean`, or simply just `make`. As a convention, the first target you should declare in a Makefile is called 'all'. This is what is executed when invoked without a target specified -- not because it's called "all" but because it's first.
+
+One little gotcha to watch out for: the indentation is important in Makefiles, and *must be done with a tab character*. If you indent with spaces, you'll get a nasty and confusing error message.
+
+Starting from the start, we want the build to run when you type `make`.
+
+```bash
+all: build
+```
+
+This declares a dummy target called `all` which must run `build` first. This target itself has no actions, since it simply calls another target. Now we need to define the `build` target. 
+
+```bash
+build: combine
+```
+
+There's only one step in our build: combine all the files into one, so lets add `combine`.
+
+These steps will need us to use some values a few times, so they can be saved to variables at the top of the file.
+
+```bash
+TMP_DIR=tmp
+SRC_DIR=src
+BUILD_OPTIONS=build/build.js
+RJS=node_modules/.bin/r.js
+
+all: build
+
+build: combine
+
+combine: convert
+    $(RJS) -o $(BUILD_OPTIONS) baseUrl=$(TMP_DIR)
+
+convert:
+    $(RJS) -convert $(SRC_DIR) $(TMP_DIR)
+```
+
+The build options are for the r.js tool, and we'll come to that soon, but apart from that, you've actually pretty much got everything you need: the files are taken from the source directory and a converted version saved into the tmp directory, and then the files in there are combined and saved. Except...
+
+Remember we said that the build process should be just `make`? Nowhere in here does it *declare* that a target depends on r.js, it just assumes it'll be in that location. The steps to make sure this exists should be added as a target and set as a dependency where needed:
+
+
+```bash
+combine: $(RJS) convert
+    $(RJS) -o $(BUILD_OPTIONS) baseUrl=$(TMP_DIR)
+
+convert: $(RJS)
+    $(RJS) -convert $(SRC_DIR) $(TMP_DIR)
+
+$(RJS):
+    npm install
+```
+
+*Now, you'd be right in pointing out that `npm` is an undeclared dependency in this case, and that npm will likely rely on Node. My opinion here is that you will need to set some baseline expectation for the environment you're expecting it to be run in. For a javascript library, I think you'd be safe in assuming NodeJS and NPM are available, but that's up to you. For applications I'm working on at SoundCloud, we assume nothing (well, very very little) about the environment the code is executing in, and hence, the build script will actually download and compile Node and Nginx during a build. This is a good practice, since you can be guaranteed of the environment if you build it yourself, however I'd say it's overkill for just a library.* 
+
+The final thing I'd recommend here is to tidy up after yourself and add a method which removes the temporary files.
+Another convention of make files is to include a target called "clean" which removes all the files created or downloaded by the build.
+
+```bash
+clean:
+    rm -rf $(TMP_DIR) node_modules
+```
+
+Now (once we get the r.js build options sorted), building is as simple (and as standard) as `make`.
+
+## r.js build options
+
+In the Makefile, we referenced a file at `build/build.js` which contains the r.js build options and now we should fill them out.
+
+These options are an extension to the requirejs configuration, for example, setting the base path of your source files, shimming non-AMD-ready third-party modules, or defining special paths for certain module names. There are several addition options for r.js
+
+*Thorough documentation for r.js is strangely difficult to find, but the best source I've found so far is the source itself. In the r.js repo is an [example build script][rjsconfig] with good documentation on the options.*
+
+- `include` defines a list of files to add into the build. The modules required by these files (using `require('some/module')`) will also be found by the r.js tool and automatically included in an optimal order. Here, you should include the base entry point for your library -- that is, module which exports the library itself. Here is where, you can include [almond][almond], which will provide us the basic interface needed for AMD modules to work.
+- `out` simply is the path of the combined file.
+- `optimize` defines which sort of minification you'd like to use.
+- `wrap` is the most important part of this configuration. If you were just to combine your files into one, all would be declared in global scope, quite possibly interfering with other application code (especially so if the application is using requirejs). The `wrap` configuration lets you define fragments of code to prepend and append to the combined file, and this will be how your library is exposed to the application. Using [UMD][umd] (Universal module definition), and putting its boilerplate in these fragments, we can then cater our library to whatever environment it will be used in. More on this below.
+
+As an example, here are the build options used for Tyrtle.
+
+```javascript
+({
+  include: ["Tyrtle", "../vendor/almond"],
+  out: "../Tyrtle.js",
+  optimize: 'none',
+  wrap: {
+    startFile: 'wrap-start.frag.js',
+    endFile: 'wrap-end.frag.js'
+  }
+})
+```
+
+### UMD fragments
+
+The UMD pattern can be implemented by using these fragments as the wrapping files in your build.
+
+```javascript
+// wrap-start.frag.js
+(function (root, factory) {
+  if (typeof define === 'function') {
+    define(factory);
+  } else if (typeof exports === 'object') {
+    module.exports = factory();
+  } else {
+    // change "myLib" to whatever your library is called
+    root.myLib = factory();
+  }
+}(this, function () {
+```
+
+*(Your code will be inserted here.)*
+
+```javascript
+  // wrap-end.frag.js
+
+  // change "my-lib" to your 'entry-point' module name 
+  return require('my-lib');
+}));
+```
+
+To briefly explain what is happening here: it defines an IIFE which is passed root (eg: `window` in the browser), and a factory function, which returns your library. When this code is executed at the run time of the application, if that application is using a module system with `define` (AMD), or simply assigning to `module.exports` (CommonJS), your library will be accessible as a module for the application. If neither of these are used, then your library is attached to the global scope using whatever name you decide (`myLib` in the above example).
+
+This style gives you a lot of flexibility, while keeping your code a good citizen which fits in to whatever is the style of the including application.
+
+## Mo' builds, mo' options
+
+By modifying the options to the r.js Makefile, you can obviously produce a range of different outputs. Here's some common options and how they could fit into a Makefile.
+
+### Production and development builds
+
+In the example r.js options above, as a unit test framework, Tyrtle had no need for minification, so the `optimize` option was set to "none", since it makes the builds faster and aids debugging, but what if you wanted to provide your users with both a 'development' and 'production' version of their library, to save them minifying it themselves? Simple! Let's add a new target to the Makefile.
+
+```bash
+minify: $(RJS) convert
+  $(RJS) -o $(BUILD_OPTIONS) baseUrl=$(TMP_DIR) out=myLibrary.min.js optimize=uglify
+```
+
+### Mobile- or platform-specific builds
+
+If you want to provide different builds of your system with specialised code for a particular platform, this is made simple with requirejs's `path` configuration. Though it has many uses, you can use it to dynamically alias a module name to a particular file, and r.js allows you to change this configuration on the fly.
+
+A mobile-specific build of a library might allow you to leave out large sections of code (eg: if it were optionally interfacing with Flash), or use jQuery 2.0 instead of 1.9, since supporting old IE would no longer be necessary.
+
+Again, it's a simple one-liner in your Makefile.
+
+```bash
+mobile: $(RJS) convert
+  $(RJS) -o $(BUILD_OPTIONS) baseUrl=$(TMP_DIR) out=myLibrary.mobile.js paths.jquery="jquery-2.0.js"
+```
+
+### Custom lodash builds
+
+If you want to use some of the functions provided by [Underscore][underscore], but are wary of increasing the file size of your library, switching to [lodash][lodash] is a good idea, since it provides Underscore compatibility, but with a powerful customisable build process. I won't go too much into the options of lodash, but here's an example of how you might integrate it with your Makefile.
+
+Lodash is shipped as an NPM module, and it provides an executable for generating a build, so those will need to be added as dependencies.
+
+```bash
+LODASH=node_modules/lodash/build.js
+LODASH_LIB=vendor/lodash.js
+
+# to access the builder, we just need the module
+$(LODASH):
+  npm install
+
+$(LODASH_LIB): $(LODASH)
+  $(LODASH) include=throttle,extend,bindAll exports=amd --output $(LODASH_LIB) --minify
+
+build:
+  $(RJS) ... paths._=$(LODASH_LIB)
+```
+
+## Wrapping up
+
+If you think a modular approach to building a javascript library is a good idea -- and it probably is -- then using requirejs and a simple Makefile will let you do everything you need with minimum fuss. There are plenty more fun things you can do in a build step, but those will have to wait for another post.
+
+[almond]: https://github.com/jrburke/almond
+[jrb]: https://github.com/jrburke
+[npm]: https://npmjs.org/
+[requirejs]: http://requirejs.org/
+[rjs]: https://github.com/jrburke/r.js
+[rjsconfig]: https://github.com/jrburke/r.js/blob/master/build/example.build.js
+[tyrtle]: https://github.com/spadgos/tyrtle
+[umd]: https://github.com/umdjs/umd
+[underscore]: https://github.com/jashkenas/underscore
