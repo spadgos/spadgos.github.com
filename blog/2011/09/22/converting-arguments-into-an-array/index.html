@@ -9,7 +9,7 @@
   <meta name="author" content="Nick Fisher">
 
   
-  <meta name="description" content="I&#8217;ve been working on the previously-mentioned Myrtle project, as well as its unit-testing sister project, Tyrtle (which will get further plugs &hellip;">
+  <meta name="description" content="I&rsquo;ve been working on the previously-mentioned Myrtle project, as well as its unit-testing sister project, Tyrtle (which will get further plugs &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -95,9 +95,9 @@
   </header>
 
 
-<div class="entry-content"><p>I&#8217;ve been working on the previously-mentioned <a href="http://www.github.com/spadgos/myrtle">Myrtle</a> project, as well as its unit-testing sister project, <a href="http://www.github.com/spadgos/tyrtle">Tyrtle</a> (which will get further plugs soon&#8230;), and I kind of stumbled across this interesting little thing.</p>
+<div class="entry-content"><p>I&rsquo;ve been working on the previously-mentioned <a href="http://www.github.com/spadgos/myrtle">Myrtle</a> project, as well as its unit-testing sister project, <a href="http://www.github.com/spadgos/tyrtle">Tyrtle</a> (which will get further plugs soon&hellip;), and I kind of stumbled across this interesting little thing.</p>
 
-<p>In javascript, there&#8217;s a &#8220;magic&#8221; variable made available inside every function, called <code>arguments</code>. It appears to be an array at first glance, but it isn&#8217;t. Observe:</p>
+<p>In javascript, there&rsquo;s a &ldquo;magic&rdquo; variable made available inside every function, called <code>arguments</code>. It appears to be an array at first glance, but it isn&rsquo;t. Observe:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -146,7 +146,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>It is actually a special type of object called <code>Arguments</code>, and it&#8217;s documented well on the <a href="https://developer.mozilla.org/en/JavaScript/Reference/functions_and_function_scope/arguments">Mozilla Developer Network</a>. Essentially, it is just an enumerable object in that it has a <code>.length</code> property and other properties in the slots <code>0...length - 1</code>, but it doesn&#8217;t have <code>Array</code> as its prototype, and hence, it doesn&#8217;t have any of the array functions on it.</p>
+<p>It is actually a special type of object called <code>Arguments</code>, and it&rsquo;s documented well on the <a href="https://developer.mozilla.org/en/JavaScript/Reference/functions_and_function_scope/arguments">Mozilla Developer Network</a>. Essentially, it is just an enumerable object in that it has a <code>.length</code> property and other properties in the slots <code>0...length - 1</code>, but it doesn&rsquo;t have <code>Array</code> as its prototype, and hence, it doesn&rsquo;t have any of the array functions on it.</p>
 
 <p>Obviously, in most cases where you want to actually do something useful with the arguments object, you actually want to have an array, rather than this strange object. Converting it to an array is usually done like so (as is recommended in the MDN article linked above):</p>
 
@@ -155,11 +155,11 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This works. If you really wanted to be pedantic about it, you could say that it isn&#8217;t actually safe, in case some code overwrites <code>Array.prototype.slice</code>, but I digress. In any case, it&#8217;s a lot of typing and can be very confusing to both newbies.</p>
+<p>This works. If you really wanted to be pedantic about it, you could say that it isn&rsquo;t actually safe, in case some code overwrites <code>Array.prototype.slice</code>, but I digress. In any case, it&rsquo;s a lot of typing and can be very confusing to both newbies.</p>
 
-<blockquote><p>Now, in the interests of openness, I should say that I originally wrote this post to talk about this <em>amazing</em> new technique I discovered: <code>[].concat(arguments)</code>. I wrote benchmarks and everything. It was shorter and performed about 4x better on Firefox. Then I actually used it in my code and discovered that <strong>it doesn&#8217;t even work</strong>. So, there you go. I thought I&#8217;d keep the bulk of this article and instead compare some other methods which actually do work&#8230;</p></blockquote>
+<blockquote><p>Now, in the interests of openness, I should say that I originally wrote this post to talk about this <em>amazing</em> new technique I discovered: <code>[].concat(arguments)</code>. I wrote benchmarks and everything. It was shorter and performed about 4x better on Firefox. Then I actually used it in my code and discovered that <strong>it doesn&rsquo;t even work</strong>. So, there you go. I thought I&rsquo;d keep the bulk of this article and instead compare some other methods which actually do work&hellip;</p></blockquote>
 
-<p>I wrote some functions which convert their arguments to an array and then return it. The first two both use slice, but I wanted to see if there was a difference between creating an array literal or using the prototype <em>(spoiler: there isn&#8217;t)</em>.</p>
+<p>I wrote some functions which convert their arguments to an array and then return it. The first two both use slice, but I wanted to see if there was a difference between creating an array literal or using the prototype <em>(spoiler: there isn&rsquo;t)</em>.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -210,9 +210,9 @@ Firefox 6.0.2    4044     3549    10068      9846
 Chrome 13       37814     2701    38180     40952
 </code></pre>
 
-<p>Yes, some of these numbers are bizarre, but they&#8217;re not typos. Push/unshift is 250% faster than slice on Firefox, and only about 10% faster on Chrome. Yes, splice is 94% slower than any other method on Chrome &#8211; even slower than Firefox in this test. Unshift out-performs Push on Chrome by about 8%, too.</p>
+<p>Yes, some of these numbers are bizarre, but they&rsquo;re not typos. Push/unshift is 250% faster than slice on Firefox, and only about 10% faster on Chrome. Yes, splice is 94% slower than any other method on Chrome &mdash; even slower than Firefox in this test. Unshift out-performs Push on Chrome by about 8%, too.</p>
 
-<p>Of course, the real benefit of <code>[].slice.apply(arguments)</code> is that it&#8217;s a one-liner. In real life usage, at best, the push/unshift technique requires 2 lines, but could be extracted to an external function. Of course, adding another function call is not free, so I did another benchmark.</p>
+<p>Of course, the real benefit of <code>[].slice.apply(arguments)</code> is that it&rsquo;s a one-liner. In real life usage, at best, the push/unshift technique requires 2 lines, but could be extracted to an external function. Of course, adding another function call is not free, so I did another benchmark.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -235,7 +235,7 @@ Chrome 13       37814     2701    38180     40952
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>In Chrome, the extra function call led to a ~33% slow down. It did not seem to affect Firefox&#8217;s performance at all, however.</p>
+<p>In Chrome, the extra function call led to a ~33% slow down. It did not seem to affect Firefox&rsquo;s performance at all, however.</p>
 
 <p>In summary:</p>
 
@@ -246,7 +246,7 @@ Chrome 13       37814     2701    38180     40952
 </ul>
 
 
-<p>Please do <a href="http://jsperf.com/converting-arguments-to-an-array">run the tests</a> yourself (and <a href="http://jsperf.com/converting-arguments-to-an-array/2">here for version 2</a> which has the additional benchmarks). Let me know if I&#8217;ve forgotten a different method, or if I&#8217;ve stuffed up my tests somehow.</p>
+<p>Please do <a href="http://jsperf.com/converting-arguments-to-an-array">run the tests</a> yourself (and <a href="http://jsperf.com/converting-arguments-to-an-array/2">here for version 2</a> which has the additional benchmarks). Let me know if I&rsquo;ve forgotten a different method, or if I&rsquo;ve stuffed up my tests somehow.</p>
 </div>
 
 

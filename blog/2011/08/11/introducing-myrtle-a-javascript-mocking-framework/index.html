@@ -9,7 +9,7 @@
   <meta name="author" content="Nick Fisher">
 
   
-  <meta name="description" content="I&#8217;m writing to introduce a small project I&#8217;ve just put together. I call it Myrtle (which I guess is some sort of play on words on the &hellip;">
+  <meta name="description" content="I&rsquo;m writing to introduce a small project I&rsquo;ve just put together. I call it Myrtle (which I guess is some sort of play on words on the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -95,11 +95,11 @@
   </header>
 
 
-<div class="entry-content"><p>I&#8217;m writing to introduce a small project I&#8217;ve just put together. I call it <strong>Myrtle</strong> <em>(which I guess is some sort of play on words on the <a href="http://en.wikipedia.org/wiki/Mock_Turtle">Mock Turtle</a>)</em>, but in any case, it is a Javascript Mocking Framework!</p>
+<div class="entry-content"><p>I&rsquo;m writing to introduce a small project I&rsquo;ve just put together. I call it <strong>Myrtle</strong> <em>(which I guess is some sort of play on words on the <a href="http://en.wikipedia.org/wiki/Mock_Turtle">Mock Turtle</a>)</em>, but in any case, it is a Javascript Mocking Framework!</p>
 
 <p>The project code is available on <a href="https://github.com/spadgos/myrtle">Github</a>, or you can just grab <a href="https://raw.github.com/spadgos/myrtle/master/Myrtle.js">Myrtle.js</a> if you like.</p>
 
-<p>So anyway, let&#8217;s look at what it does. Let&#8217;s say you&#8217;re writing some tests for your code, and you want to check that a particular function is called. For example, you might have a Validator class which should be called when a form input is changed. Here&#8217;s the signature of a basic validation class:</p>
+<p>So anyway, let&rsquo;s look at what it does. Let&rsquo;s say you&rsquo;re writing some tests for your code, and you want to check that a particular function is called. For example, you might have a Validator class which should be called when a form input is changed. Here&rsquo;s the signature of a basic validation class:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -160,18 +160,18 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>What&#8217;s important to remember here is that the validate method is still executed as if nothing ever happened. Myrtle wouldn&#8217;t be a good spy otherwise&#8230;</p>
+<p>What&rsquo;s important to remember here is that the validate method is still executed as if nothing ever happened. Myrtle wouldn&rsquo;t be a good spy otherwise&hellip;</p>
 
-<p>Other times you want to actually stop functions from running. For example, in a test environment, you might want to suppress error messages which you&#8217;re triggering on purpose, or to stop AJAX functions from executing. In these cases, you can stub out a function.</p>
+<p>Other times you want to actually stop functions from running. For example, in a test environment, you might want to suppress error messages which you&rsquo;re triggering on purpose, or to stop AJAX functions from executing. In these cases, you can stub out a function.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">Myrtle</span><span class="p">.</span><span class="nx">stub</span><span class="p">(</span><span class="nx">Notifications</span><span class="p">,</span> <span class="s1">&#39;displayError&#39;</span><span class="p">);</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This replaces the <code>displayError</code> method with a function which does nothing. Care should be taken in these cases that other code isn&#8217;t expecting a return value from functions which you stub out completely.</p>
+<p>This replaces the <code>displayError</code> method with a function which does nothing. Care should be taken in these cases that other code isn&rsquo;t expecting a return value from functions which you stub out completely.</p>
 
-<p>You can also replace a function using stub. This is useful if you want to simulate a method, but not actually execute it - for example, when an AJAX method is called, you can put together a fake response.</p>
+<p>You can also replace a function using stub. This is useful if you want to simulate a method, but not actually execute it &ndash; for example, when an AJAX method is called, you can put together a fake response.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -182,7 +182,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>You&#8217;ll see there that the first parameter passed to the stub function is the original method. This is useful in cases where you may want to only stub it out based on some criteria, or to modify arguments or return values of the original method.</p>
+<p>You&rsquo;ll see there that the first parameter passed to the stub function is the original method. This is useful in cases where you may want to only stub it out based on some criteria, or to modify arguments or return values of the original method.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -226,9 +226,9 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Those are the three main features of Myrtle (so far). However, the nice thing about them is that they can all be combined in any way. You can spy on and stub out a method, or spy and profile. Stubbing and profiling probably isn&#8217;t so useful though, since you&#8217;d only be measuring the speed of performing your replacement method.</p>
+<p>Those are the three main features of Myrtle (so far). However, the nice thing about them is that they can all be combined in any way. You can spy on and stub out a method, or spy and profile. Stubbing and profiling probably isn&rsquo;t so useful though, since you&rsquo;d only be measuring the speed of performing your replacement method.</p>
 
-<p>There are a few ways to combine the options, and it&#8217;s important to know that each of the Myrtle functions returns the <em>exact same</em> API object per function. To demonstrate:</p>
+<p>There are a few ways to combine the options, and it&rsquo;s important to know that each of the Myrtle functions returns the <em>exact same</em> API object per function. To demonstrate:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -239,7 +239,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>There&#8217;s also the <code>Myrtle</code> function itself which can be used:</p>
+<p>There&rsquo;s also the <code>Myrtle</code> function itself which can be used:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -258,7 +258,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Of course, the last thing to cover is an important one: tidying up. Chances are that you don&#8217;t want to stub out your methods for all the tests, and you want to restore them to how they were before at some point. Myrtle makes this super easy.</p>
+<p>Of course, the last thing to cover is an important one: tidying up. Chances are that you don&rsquo;t want to stub out your methods for all the tests, and you want to restore them to how they were before at some point. Myrtle makes this super easy.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>

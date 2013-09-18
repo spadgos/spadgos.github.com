@@ -97,13 +97,13 @@
 
 <div class="entry-content"><p>This weekend was the <a href="http://amsterdam.musichackday.org/2012/index.php?page=Main+page">Amsterdam</a> <a href="http://musichackday.org">Music Hack Day</a>, which I was lucky enough to go along to. Although the weather seemed way too nice to spend the entire weekend indoors staring at a keyboard, <a href="http://wiki.musichackday.org/index.php?title=Amsterdam_2012_Hacks">plenty of people</a> were just as silly as me. Some of the standouts were the Theremin-controlled autotuned karaoke machine, the Bunny Boogie (where a robotic rabbit can upload recordings to SoundCloud and then will dance along to the songs you play there) and a mashup which finds popular animated gifs which match the BPM of songs in your Spotify library and synchronise the two.</p>
 
-<p>I worked with <a href="http://twitter.com/#!a_kovalev">Sasha</a> on building an experiment we called &#8221;<a href="http://citysonar.herokuapp.com/">CitySonar</a>&#8221;. The concept is simple, though perhaps hard to describe in words. Let&#8217;s try anyway:</p>
+<p>I worked with <a href="http://twitter.com/#!a_kovalev">Sasha</a> on building an experiment we called &ldquo;<a href="http://citysonar.herokuapp.com/">CitySonar</a>&rdquo;. The concept is simple, though perhaps hard to describe in words. Let&rsquo;s try anyway:</p>
 
 <ol>
 <li>Choose a location on a map (we used Google Maps)</li>
 <li>Choose a geographical feature, such as banks, schools or cafes.</li>
 <li>A marker is placed on the screen for each of these features near you.</li>
-<li>When you press play, a &#8216;sonar&#8217; sweeps around the map and plays a note for each of the markers.</li>
+<li>When you press play, a &lsquo;sonar&rsquo; sweeps around the map and plays a note for each of the markers.</li>
 </ol>
 
 
@@ -113,13 +113,13 @@
 
 <blockquote><p><strong>Warning full frontal nerdity:</strong> This is a client-side app, built entirely in Javascript. The only server-side component was a small NodeJS proxy to get around cross-origin security restrictions. The data was pulled from the <a href="http://wiki.openstreetmap.org/">OpenStreetMap</a> XAPI, custom map tiles provided by <a href="http://maps.stamen.com/">Stamen Maps</a>, and client-side audio generation was done by <a href="https://github.com/oampo/audiolet">Audiolet</a>.</p></blockquote>
 
-<p>One great thing about the OpenStreetMap data is that it tracks heaps of geographic features, categorised quite granularly, so it&#8217;s not just &#8220;bars&#8221; and &#8220;cafes&#8221; nearby, but power poles, bicycle parking, post boxes, and even brothels. Mapping these features gave some really interesting insights and some interesting results for our experiment.</p>
+<p>One great thing about the OpenStreetMap data is that it tracks heaps of geographic features, categorised quite granularly, so it&rsquo;s not just &ldquo;bars&rdquo; and &ldquo;cafes&rdquo; nearby, but power poles, bicycle parking, post boxes, and even brothels. Mapping these features gave some really interesting insights and some interesting results for our experiment.</p>
 
 <p>For example, in a large city like Amsterdam, searching for <em>restaurants</em> will end up with a cacophony, as these tend to be clustered quite tightly in neighbourhoods. <em>Post boxes</em>, however are evenly spaced thoughout the city and actually can create something resembling a melody. Using features which are clustered in a single place (for example, embassies or brothels) can be used for a loud <em>hit</em> in your soundscape.</p>
 
-<p>The quality of the project is still firmly in the &#8220;hack&#8221; category &#8211; it did go from idea to completion in 24 hours, remember! &#8211; but it&#8217;s rather functional still, if you ignore some visual glitching&#8230; Also, OpenStreetMap is a community-built map and it&#8217;s definitely not complete yet: if you see features missing in your area, don&#8217;t forget you can go add them yourself!</p>
+<p>The quality of the project is still firmly in the &ldquo;hack&rdquo; category &mdash; it did go from idea to completion in 24 hours, remember! &mdash; but it&rsquo;s rather functional still, if you ignore some visual glitching&hellip; Also, OpenStreetMap is a community-built map and it&rsquo;s definitely not complete yet: if you see features missing in your area, don&rsquo;t forget you can go add them yourself!</p>
 
-<p>You can check it out at <a href="http://citysonar.herokuapp.com/">http://citysonar.herokuapp.com</a>, and grab the code on <a href="https://github.com/spadgos/soundradar">GitHub</a>, but my god, the code is hacky. Please don&#8217;t look at it. <em>Also, the API we use is very slow sometimes, so you&#8217;ll just need to be patient sometimes.</em></p>
+<p>You can check it out at <a href="http://citysonar.herokuapp.com/">http://citysonar.herokuapp.com</a>, and grab the code on <a href="https://github.com/spadgos/soundradar">GitHub</a>, but my god, the code is hacky. Please don&rsquo;t look at it. <em>Also, the API we use is very slow sometimes, so you&rsquo;ll just need to be patient sometimes.</em></p>
 
 <h3>Bonus video</h3>
 

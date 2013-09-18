@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>WebExpo Prague 2013</title>
+
+    <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+    <meta name="author" content="Hakim El Hattab">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/reveal.min.css">
+    <link rel="stylesheet" href="css/sc.css">
+    <link rel="stylesheet" href="css/theme/soundcloud.css" id="theme">
+
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+    <link rel="icon" href="https://a2.sndcdn.com/assets/images/sc-icons/favicon-154f6af5.ico">
+    <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+    <script>
+      document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <div class="slides">
+        <section data-state="title-slide">
+          <h1>Making the SPA work</h1>
+          <p>
+            Nick Fisher @spadgos
+          </p>
+          <br><a href="http://spadgos.github.com/webexpo">spadgos.github.com/webexpo</a>
+        </section>
+
+        <section>
+          <h2>Background</h2>
+          <div style="position:relative">
+            <img src="listen-page-classic.png" class="fragment" style="max-width: 100%; max-height:100%">
+            <img src="listen-page-v2.png" class="fragment" style="position: absolute; top:0; left: 1px; max-width: 100%; max-height:100%">
+          </div>
+          <img src="cloud.png" width="15%">
+          <aside class="notes">
+            <p>
+              about soundcloud.<br>
+              tech lead on soundcloud.com, at the start of last year we started a rewrite, fully launched in december. soundcloud reaches 240m
+            </p>
+          </aside>
+        </section>
+
+        <!--
+        Models
+        -->
+
+        <section data-state="title-slide">
+          <h1>Data Management</h1>
+        </section>
+
+        <section>
+          <h2>The long running app</h2>
+          <ul>
+            <!-- <li class="fragment">New for many web devs</li> -->
+            <li class="fragment">Challenges
+              <ul class="fragment">
+                <li>Memory leaks</li>
+                <li>Performance</li>
+              </ul>
+            </li>
+            <li class="fragment">Opportunities
+              <ul class="fragment">
+                <li>Faster loading</li>
+                <li>Better experience</li>
+              </ul>
+            </li>
+          </ul>
+          <aside class="notes">
+            <p>This is something many webdevs coming from a 'more traditional' ruby/php background don't need to deal with very much. One request = one page and everything is cleaned up afterwards.</p>
+          </aside>
+        </section>
+
+        <section data-state="code">
+          <h2>Leaks</h2>
+          <pre class="fragment"><code>var cache = {};
+function sendRequest(url) {
+  if (!cache[url]) {
+    cache[url] = $.get(url).fail(logError);
+  }
+  return cache[url];
+}</code></pre>
+          <aside class="notes">
+            <p>how much of a problem it is is individual to your app, depending on how long your code will be running for, and the amount of data you're dealing with.</p>
+            <p> SoundCloud sessions can go many hours without a refresh, and we pull in lots of data via AJAX, so something like this would very quickly kill your browser. However, in other applications, this might actually be very efficient if you only need to make a couple dozen requests in the lifespan of the app. I've seen one client-side application where it never throws away references to the entire page of DOM elements, and that has worked out fine, since there were only a limited number of pages needed for that app.</p>
+
+            <p>code from before, there is an obvious ML here, since the requests along with the full data of each response is stored for the life of the program.</p>
+          </aside>
+        </section>
+
+        <section>
+          <h2>Sharing is caring</h2>
+          <img src="sharing.jpg">
+          <aside class="notes">
+            Depending on how you structure your app, you will almost definitely have some views of the same data. Think about a page which might list products, and then when you click through you get a details page. These two pages both show a view of the same data, just in different formats. If they were to be fetching their own data that would be grossly inefficient, so we need to find a way for them to share.
+          </aside>
+        </section>
+
+        <section>
+          <h2>Many views, one model</h2>
+          <div style="position: relative">
+            <img src="listen.png" style="max-width: 100%; max-height: 100%">
+            <img src="listen-highlighted.png" style="position: absolute; top:0; left: 1px; max-width: 100%; max-height:100%" class="fragment">
+          </div>
+        </section>
+
+        <section data-state="code">
+          <h2>Identity map</h2>
+          <ul>
+            <li>One model = one instance, everywhere</li>
+            <li class="fragment">Access by overriding constructor</li>
+          </ul>
+          <pre class="fragment"><code data-trim>
+var map = {};
+function User(id) {
+  if (map[id]) {
+    return map[id];
+  }
+  map[id] = this;
+  this.initialize();
+}</code></pre>
+          <pre>
+<span class="fragment">var userA = new User(123),</span>
+<span class="fragment">    userB = new User(123);</span>
+<span class="fragment">userA === userB; // true</span></pre>
+          <cite>Martin Fowler: <a href="http://martinfowler.com/eaaCatalog/identityMap.html">Patterns of Enterprise Application Architecture</a></cite>
+        </section>
+        <section>
+          <h2>Wait a second</h2>
+          <h3>Isn't this a massive memory leak?</h3>
+        </section>
+        <section data-state="code">
+          <h2>Yep<span class="fragment">, so...</span></h2>
+          <pre class="fragment"><code data-trim>
+var map = {},
+    counts = {}; // &lt;-- usage counter
+
+function User(id) {
+  if (map[id]) {
+    ++counts[id];
+    return map[id];
+  }
+  map[id] = this;
+  counts[id] = 1;
+  this.initialize();
+}
+</code></pre>
+<pre class="fragment"><code data-trim>
+User.prototype.release = function () {
+  --counts[this.id];
+}</code></pre>
+          <small class="fragment">This is a <em>slight</em> simplification...</small>
+        </section>
+
+        <section data-state="code">
+          <h2>In use</h2>
+          <pre><code data-trim>
+MyView = View.extend({
+  initialize: function (options) {
+    this.model = new Sound(options.soundId);
+  },
+  dispose: function () {
+    this.model.release();
+  }
+});</code></pre>
+          <p class="fragment">Still need to be careful to release all that you create</p>
+        </section>
+
+        <section>
+          <h2>A nice side-effect</h2>
+        </section>
+
+        <section data-state="code">
+          <h2>Nested API Responses</h2>
+          <p>api.soundcloud.com/tracks/97602814.json</p>
+          <pre><code data-trim>
+{
+  // ...snip...
+  title: "02 daftside - within",
+  uri: "https://api.soundcloud.com/tracks/97602814",
+  user: {
+    id: 48554944,
+    kind: "user",
+    permalink: "daftside-2",
+    avatar_url: "https://i1.sndcdn.com/avatars...",
+    username: "DARKSIDE (USA)"
+  },
+  user_id: 48554944
+}
+          </code></pre>
+        </section>
+        <!--
+
+          CSS
+
+        -->
+        <section data-state="title-slide">
+          <h1>CSS Management</h1>
+          <aside class="notes">
+            Even with good intentions and preprocessors, it's quite possible to get yourself into a mess. 3000+ line files, rules which are too broad to change, and some which are just...
+          </aside>
+        </section>
+        <section data-state="code">
+          <pre><code data-trim>
+body#pages.sounds #main-wrapper #main-wrapper-inner #soundpage #primary .social-sharing .share-plugin.last .twitter-share-button {
+  width: 101px !important;
+}
+          </code></pre>
+          <p class="fragment">5 ids</p>
+          <p class="fragment">4 classes</p>
+          <p class="fragment">8 descendant selectors</p>
+          <p class="fragment">!important</p>
+        </section>
+        <section>
+          <img src="css.gif">
+        </section>
+        <section>
+          <h2>The problems</h2>
+          <p>Fragility</p>
+          <p>Speed</p>
+          <p>File size</p>
+          <p>Maintainability</p>
+          <aside class="notes">
+            The previous selector: any change to any part of that structure will break it.
+            <hr>
+            People tend to forget about CSS performance, but it does matter! Evaluating these rules isn't free, and the more steps there are per rule, the longer it will take. Especially on mobile and older browsers.
+            <hr>
+            Even when using a pre-processor, the strategy is to combine and serve all css in one go. These files are not small. If you're serving upwards of 300-400kb CSS, users will notice.
+            <hr>
+            Related to fragility, but more to do with removing rules. When you don't know exactly what needs some CSS, how can you safely remove it?
+          </aside>
+        </section>
+
+        <section>
+          <h2>Our solution</h2>
+          <p>Application built from lots of small views</p>
+          <p>Each view defines and explicitly requires its own CSS</p>
+          <p>Each element gets a namespaced class</p>
+          <p><cite>Inspired by <a href="http://bem.info/method/">BEM</a> from Yandex</cite></p>
+        </section>
+
+        <section data-state="code">
+          <pre><code data-trim>
+.soundTitle__title {
+  max-width: 100%;
+  display: inline-block;
+}
+
+.soundTitle__tagContainer {
+  line-height: 12px;
+}
+
+.soundTitle__playButton {
+  margin-right: 5px;
+  margin-top: -15px;
+}
+          </code></pre>
+          <aside class="notes">
+            this immediately addresses some of the problems: it's now robust to template changes, and no rules here could affect the appearance of other views
+            <hr>
+            performing a single lookup to assess a rule is much faster.
+            <hr>
+          </aside>
+        </section>
+
+        <section>
+          <h2>But...</h2>
+          <blockquote class="fragment">"It makes my eyes bleed"<cite>Chris Eppstein, SASS/Compass</cite></blockquote>
+        </section>
+
+        <section>
+          <h2>CSS ↝ JS</h2>
+          <div class="fragment"><img src="wat.gif" width="50%"></div>
+        </section>
+        <section data-state="code">
+          <h2>CSS ↝ JS</h2>
+          <pre>
+<span class="fragment">define("views/sound/title.css", [],</span>
+<span class="fragment">  function(require, exports, module) {</span>
+<span class="fragment">    var style = module.exports = document.createElement("style");</span>
+<span class="fragment">    style.appendChild(</span>
+<span class="fragment">      document.createTextNode(</span>
+<span class="fragment">        '.soundTitle__info{display...}'</span>
+<span class="fragment">      )
+    );
+  }
+);
+</pre>
+        </section>
+        <section data-state="code">
+          <pre><code data-trim>
+View.extend({
+  css: require('views/sound/title.css'),
+  render: function () {
+    if (!this.css.parentNode) {
+      document.body.appendChild(this.css);
+    }
+    // ...
+  }
+});
+          </code></pre>
+          <p>Warning: simplification</p>
+        </section>
+        <!--
+
+        WAVEFORMS
+
+        -->
+
+        <section data-state="title-slide">
+          <h1>My waveforms</h1>
+          <h3 class="fragment">Let me show you them</h3>
+        </section>
+        <section>
+          <h2>The situation</h2>
+          <div style="line-height: 0; padding: 0; background: -webkit-linear-gradient(#303030, #808080); -webkit-transition: all 500ms ease-in-out;" onclick="this.style.padding=this.style.padding=='15px'?0:'15px';this.style.background='-webkit-linear-gradient(#808080, #303030)'"><img src="waveform.png" style="margin: 0"></div>
+          <aside class="notes">
+            these are how waveforms look on classic SC -- and it's actually just a transparent PNG with a gradient underneath.
+          </aside>
+        </section>
+        <section>
+          <h2>New Waveforms</h2>
+          <p>New style: sharp, no anti-aliasing.</p>
+          <img src="new-waveform.png" style="width: 80%">
+          <div class="fragment">
+            <p>New playlist style</p>
+            <img src="playlist.png.png" style="width: 80%">
+          </div>
+          <div class="fragment">
+            <p>Flexible</p>
+            <img src="visual-sound.png" style="width: 80%">
+          </div>
+        </section>
+        <section>
+          <h2>Solution:</h2>
+          <h3 class="fragment">Canvas!</h3>
+          <h2 class="fragment">Problem:</h2>
+          <h3 class="fragment">Data!</h3>
+          <aside class="notes">
+            describe here about how the images are the only information we have
+          </aside>
+        </section>
+        <section>
+          <h2>Solution:</h2>
+          <h3 class="fragment">Images as data source</h3>
+          <h2 class="fragment">Problem:</h2>
+          <h3 class="fragment">Performance!</h3>
+          <aside class="notes">
+            describe the basic process of reading, writing: put image in canvas, read the pixel data to find the waveform heights, resample to the desired size, draw to a new canvas<br>
+            works great, until you have lots of waveforms to render. not initially a problem, but then we allowed people to make sets of any tracks.
+          </aside>
+        </section>
+        <section>
+          <h2>Dubstep fans</h2>
+          <img src="dubstep.png">
+          <img class="fragment" src='ayfkm.png' style="position: absolute; width: 30%; top: 25%; left: 35%">
+          <p class="fragment">Rendering time: <b>1352ms</b></p>
+          <aside class="notes">
+            might be hard to see, but there's (440, 178, 146 = 746) tracks here. There's more sets off-screen too. This absolutely killed all browsers.
+          </aside>
+        </section>
+        <section>
+          <h2>Gradual improvements</h2>
+          <ul>
+            <li>Most efficient detection algorithm</li>
+            <li>Caching scaled images</li>
+            <li>Typed Arrays</li>
+            <li><strike>WebWorkers</strike></li>
+          </ul>
+          <aside class="notes">
+            - webworkers seemed like a good way to improve the performance here: running in a different thread, and able to 'divide and conquer' between multiple workers. Issues were a severe memory leak in Chromium/V8 (now fixed?), and the time to spin up the workers actually resulted in worse performance with a lot more complexity.
+          </aside>
+        </section>
+        <section>
+          <h2>Breakthrough realisation:</h2>
+          <h3 class="fragment">Who gives a crap anyway?</h3>
+          <img class="fragment" src="dubstep.png">
+          <aside class="notes">
+            If the waveform is going to be less than 6 pixels wide, then it doesn't matter what it actually looks like, so just make it up.
+            90% performance improvement.
+          </aside>
+        </section>
+        <section>
+          <h2>Still kept improving</h2>
+          <p class="fragment">...by giving up</p>
+          <ul class="fragment">
+            <li>Move calculation to the back end</li>
+            <li>Ported algorithm to Go</li>
+            <li>Front end receives JSON, everyone happy</li>
+          </ul>
+        </section>
+        <section>
+          <h2>End result</h2>
+          <p class="fragment">Before: <b>1352ms</b></p>
+          <p class="fragment">After: <b>10ms</b></p>
+          <img class="fragment" src="rainbows.png">
+          <aside class="notes">
+            Lesson here: think about how to cheat. What we do as engineers often focuses on what is correct, ignoring whether that is actually important, or even better. Sometimes you have to give up and think of a completely different approach.
+          </aside>
+        </section>
+        <section data-state="title-slide">
+          <h1>THE END</h1>
+          <h3>Nick Fisher / @spadgos</h3>
+          <img src="cloud.png" width="15%"><br>
+          <a href="https://soundcloud.com">soundcloud.com</a>
+          <br><a href="http://spadgos.github.com/webexpo">spadgos.github.com/webexpo</a>
+        </section>
+        <section data-state="title-slide">
+          <h3>(Obligatory)</h3>
+          <h1>We're hiring!</h1>
+          <a href="https://soundcloud.com/jobs">soundcloud.com/jobs</a>
+        </section>
+      </div>
+
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.min.js"></script>
+
+    <script>
+
+      // Full list of configuration options available here:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: false,
+        // Display a presentation progress bar
+        progress: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+        // Enable the slide overview mode
+        overview: true,
+        // Vertical centering of slides
+        center: true,
+        // Loop the presentation
+        loop: false,
+        // Change the presentation direction to be RTL
+        rtl: false,
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+        // Apply a 3D roll to links on hover
+        rollingLinks: false,
+        // Transition style
+        transition: 'linear', // default/cube/page/concave/zoom/linear/fade/none
+
+        // theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        // transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+        ]
+      });
+
+    </script>
+
+  </body>
+</html>
