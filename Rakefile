@@ -10,7 +10,7 @@ document_root  = "~/website.com/"
 deploy_default = "push"
 rsync_delete   = false
 rsync_args     = ""  # Any extra arguments to pass to rsync
-deploy_default = "rsync"
+deploy_default = "push"
 
 # This will be configured for you when you run config_deploy
 deploy_branch  = "master"
