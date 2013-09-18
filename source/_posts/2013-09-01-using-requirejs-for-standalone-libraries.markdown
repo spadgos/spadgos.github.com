@@ -6,11 +6,11 @@ comments: true
 categories: 
 ---
 
-Modular code is great. For both development and ongoing maintainence, it brings you many benefits, however most discussion in this area is focussed on writing modular applications. I want to talk about using modular code in all parts of your development, in particular when developing a standalone library. The most popular library for client-side modules is [RequireJS][requirejs], so I will focus on that.
+Modular code is great. For both development and ongoing maintainence, it brings you many benefits, however most discussion in this area is focussed on writing modular *applications*. I want to talk about using modular code in all parts of your development, in particular when developing a standalone library. The most popular library for client-side modules is [RequireJS][requirejs], so I will focus on that.
 
 ## Case study
 
-A few months ago, I closed a long-standing issue on a unit test framework I built, called [Tyrtle][tyrtle]: break the source into more manageable pieces. The code had grown to almost 1500 lines and it was getting very difficult to work on. After spending a day getting it all together, in the end I had a much simpler project which was a lot more maintainable, at the cost of a couple more kilobytes. These are some things I'd recommend from my experience: there's definitely different ways to achieve the same effect, or even maybe some better practices out there, but this is what I've found so far.
+A few months ago, I closed a long-standing issue on a unit test framework I built, called [Tyrtle][tyrtle]: to break the source into more manageable pieces. The code had grown to almost 1500 lines and it was getting very difficult to work on. After spending a day getting it all together, in the end I had a much simpler project which was a lot more maintainable, at the cost of a couple more kilobytes. These are some things I'd recommend from my experience: there's definitely different ways to achieve the same effect, or even maybe some better practices out there, but this is what I've found so far.
 
 ## Some important questions
 
