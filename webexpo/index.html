@@ -41,7 +41,7 @@
           <p>
             Nick Fisher @spadgos
           </p>
-          <br><a href="http://spadgos.github.com/webexpo">spadgos.github.com/webexpo</a>
+          <br><a href="http://spadgos.github.io/webexpo">spadgos.github.io/webexpo</a>
         </section>
 
         <section>
@@ -59,12 +59,19 @@
           </aside>
         </section>
 
+        <section>
+          <h2>Coming up</h2>
+          <p class="fragment"><b>Models</b>: making them work for you</p>
+          <p class="fragment"><b>CSS</b>: making it work at all</p>
+          <p class="fragment"><b>Client-side performance</b><span class="fragment">, or "cheating"</span>
+        </section>
+
         <!--
         Models
         -->
 
         <section data-state="title-slide">
-          <h1>Data Management</h1>
+          <h1>Managing models</h1>
         </section>
 
         <section>
@@ -137,11 +144,19 @@ function User(id) {
   map[id] = this;
   this.initialize();
 }</code></pre>
+          <cite>Martin Fowler: <a href="http://martinfowler.com/eaaCatalog/identityMap.html">Patterns of Enterprise Application Architecture</a></cite>
+        </section>
+        <section data-state="code">
           <pre>
 <span class="fragment">var userA = new User(123),</span>
 <span class="fragment">    userB = new User(123);</span>
-<span class="fragment">userA === userB; // true</span></pre>
-          <cite>Martin Fowler: <a href="http://martinfowler.com/eaaCatalog/identityMap.html">Patterns of Enterprise Application Architecture</a></cite>
+<span class="fragment">userA === userB;                // true</span>
+<span class="fragment">userA.set('name', 'Sparticus');</span>
+<span class="fragment">userB.get('name');              // 'Sparticus'</span></pre>
+          <aside class="notes">
+            ..what this means is that views which get an instance might already have data available.<br>
+            ..if something changes a property, then all views get the change event and can update
+          </aside>
         </section>
         <section>
           <h2>Wait a second</h2>
@@ -151,15 +166,15 @@ function User(id) {
           <h2>Yep<span class="fragment">, so...</span></h2>
           <pre class="fragment"><code data-trim>
 var map = {},
-    counts = {}; // &lt;-- usage counter
+    counts = {};    // &lt;-- usage counter
 
 function User(id) {
   if (map[id]) {
-    ++counts[id];
+    ++counts[id];   // &lt;-- increase on access
     return map[id];
   }
   map[id] = this;
-  counts[id] = 1;
+  counts[id] = 1;   // &lt;-- set to 1 on first creation
   this.initialize();
 }
 </code></pre>
@@ -207,6 +222,13 @@ MyView = View.extend({
 }
           </code></pre>
         </section>
+
+        <section>
+          <h2>Managing models</h2>
+          <p>Techniques like the identity map can help you make full use of the data you have...</p>
+          <img class="fragment" src="spider-man-with-great-power.jpg">
+          <p class="fragment">...but be careful to manage that data over your app's lifetime.</p>
+        </section>
         <!--
 
           CSS
@@ -225,9 +247,10 @@ body#pages.sounds #main-wrapper #main-wrapper-inner #soundpage #primary .social-
 }
           </code></pre>
           <p class="fragment">5 ids</p>
-          <p class="fragment">4 classes</p>
+          <p class="fragment">5 classes</p>
           <p class="fragment">8 descendant selectors</p>
           <p class="fragment">!important</p>
+          <h2 class="fragment">wat</h2>
         </section>
         <section>
           <img src="css.gif">
@@ -317,8 +340,16 @@ View.extend({
   }
 });
           </code></pre>
-          <p>Warning: simplification</p>
         </section>
+
+        <section>
+          <h2>CSS as modules</h2>
+          <p><strike>Fragility</strike></p>
+          <p><strike>Speed</strike></p>
+          <p><strike>File size</strike></p>
+          <p><strike>Maintainability</strike></p>
+        </section>
+
         <!--
 
         WAVEFORMS
@@ -412,6 +443,12 @@ View.extend({
           <p class="fragment">Before: <b>1352ms</b></p>
           <p class="fragment">After: <b>10ms</b></p>
           <img class="fragment" src="rainbows.png">
+        </section>
+        <section>
+          <h2>Take away</h2>
+          <p class="fragment">Think about how to cheat.</p>
+          <p class="fragment">Take off the engineer hat.</p>
+          <p class="fragment">Think about what's important, not what's "correct".</p>
           <aside class="notes">
             Lesson here: think about how to cheat. What we do as engineers often focuses on what is correct, ignoring whether that is actually important, or even better. Sometimes you have to give up and think of a completely different approach.
           </aside>
@@ -421,7 +458,7 @@ View.extend({
           <h3>Nick Fisher / @spadgos</h3>
           <img src="cloud.png" width="15%"><br>
           <a href="https://soundcloud.com">soundcloud.com</a>
-          <br><a href="http://spadgos.github.com/webexpo">spadgos.github.com/webexpo</a>
+          <br><a href="http://spadgos.github.io/webexpo">spadgos.github.io/webexpo</a>
         </section>
         <section data-state="title-slide">
           <h3>(Obligatory)</h3>
