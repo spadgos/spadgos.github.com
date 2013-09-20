@@ -135,7 +135,10 @@ function sendRequest(url) {
             <li>One model = one instance, everywhere</li>
             <li class="fragment">Access by overriding constructor</li>
           </ul>
-          <pre class="fragment"><code data-trim>
+          <cite>Martin Fowler: <a href="http://martinfowler.com/eaaCatalog/identityMap.html">Patterns of Enterprise Application Architecture</a></cite>
+        </section>
+        <section data-state="code">
+          <pre><code data-trim>
 var map = {};
 function User(id) {
   if (map[id]) {
@@ -144,15 +147,14 @@ function User(id) {
   map[id] = this;
   this.initialize();
 }</code></pre>
-          <cite>Martin Fowler: <a href="http://martinfowler.com/eaaCatalog/identityMap.html">Patterns of Enterprise Application Architecture</a></cite>
-        </section>
-        <section data-state="code">
           <pre>
 <span class="fragment">var userA = new User(123),</span>
 <span class="fragment">    userB = new User(123);</span>
 <span class="fragment">userA === userB;                // true</span>
 <span class="fragment">userA.set('name', 'Sparticus');</span>
-<span class="fragment">userB.get('name');              // 'Sparticus'</span></pre>
+<span class="fragment">userB.get('name');              // 'Sparticus'</span>
+<span class="fragment">var userC = new User(123);</span>
+<span class="fragment">userC.get('name');              // 'Sparticus'</span></pre>
           <aside class="notes">
             ..what this means is that views which get an instance might already have data available.<br>
             ..if something changes a property, then all views get the change event and can update
@@ -163,7 +165,7 @@ function User(id) {
           <h3>Isn't this a massive memory leak?</h3>
         </section>
         <section data-state="code">
-          <h2>Yep<span class="fragment">, so...</span></h2>
+          <h2>It totally is<span class="fragment">, so...</span></h2>
           <pre class="fragment"><code data-trim>
 var map = {},
     counts = {};    // &lt;-- usage counter
@@ -275,8 +277,8 @@ body#pages.sounds #main-wrapper #main-wrapper-inner #soundpage #primary .social-
         <section>
           <h2>Our solution</h2>
           <p>Application built from lots of small views</p>
-          <p>Each view defines and explicitly requires its own CSS</p>
-          <p>Each element gets a namespaced class</p>
+          <p>One CSS file per view</p>
+          <p>In the template, each element gets a namespaced class</p>
           <p><cite>Inspired by <a href="http://bem.info/method/">BEM</a> from Yandex</cite></p>
         </section>
 
