@@ -1,13 +1,13 @@
 ---
 layout: post
-title: "Using RequireJS for standalone libraries"
+title: "Using RequireJS and Make for standalone libraries"
 date: 2013-09-09 20:06
 comments: true
 published: false
 categories: 
 ---
 
-Modular code is great. For both development and ongoing maintainence, it brings you many benefits, however most discussion in this area is focussed on writing modular *applications*. I want to talk about using modular code in all parts of your development, in particular when developing a standalone library. The most popular library for client-side modules is [RequireJS][requirejs], so I will focus on that.
+Modular code is great. For both development and ongoing maintainence, it brings you many benefits, however most discussion in this area is focussed on writing modular *applications*. Modular code belongs in all parts of your development, in particular I want to talk about using it when developing a standalone library. The most popular library for client-side modules is [RequireJS][requirejs], so I will focus on that.
 
 ## Case study
 
@@ -33,7 +33,7 @@ You should also decide now where the compiled version of your library will live.
 
 Having the built library in the repository itself will be useful if you want your library to be used with client-side package managers such as Bower.
 
-The arguments against checking in the built library are all quite valid: in general, it is considered bad practice to check in build artefacts; and it increases confusion for other developers wanting to contribute. You will just need to weigh the ease-of-use of your library against these concerns. If you did want to avoid checking in build artefacts, yet still provide a simple version for your users, one suggestion would be to create another repository for stable releases, and use the opportunity to provide configuration tailored to a particular package manager (eg: a `component.json` file for Bower).
+The arguments against checking in the built library are all quite valid: in general, it is considered bad practice to check in build artefacts; and it increases confusion for other developers wanting to contribute. You will just need to weigh the ease-of-use of your library against these concerns. If you did want to avoid checking in build artefacts, yet still provide a simple version for your users, one suggestion would be to create another repository for stable releases, and then also provide configuration tailored to a particular package manager (eg: a `component.json` file for Bower).
 
 ### Application structure
 
@@ -69,13 +69,13 @@ Start developing your library (or converting your existing one), putting each lo
 
 ## Automating the build
 
-The overall goal here is to make your life easier, and as every good programmer knows, the key to an easy life is automation, so we'll configure as we go. There's a ton of systems you can choose for automation, including Makefiles, Cakefiles, Rakefiles, Jakefiles, GruntJS and more. For what we need, I recommend using a Makefile. It might not be the most intuitive interface, but it's very powerful and could win purely on ubiquity. It was created in 1977, and is widely known by developers of many different languages. This benefit is not to be underestimated: there is a ton of great documentation, community knowledge and [best practices][best-pracs] to help you along the way.
+The overall goal here is to make your life easier, and as every good programmer knows, the key to an easy life is automation, so we'll configure as we go. There's a ton of systems you can choose for automation, including Makefiles, Cakefiles, Rakefiles, Jakefiles, GruntJS and more. For what we need, I recommend using a Makefile. It might not appear to be the most intuitive interface, but it's very powerful and could win purely on ubiquity. It was created in 1977, and is widely known by developers of many different languages. This benefit is not to be underestimated: there is a ton of great documentation, community knowledge and [best practices][best-pracs] to help you along the way.
 
-With a good Makefile (or any other tool you choose), your project's build instructions should be "Run `make`", and never "Install the node modules, then the front end modules, then copy this, then...".
+With a good Makefile (or any other tool you choose), your project's build instructions should be to run one simple command, and never "Install the node modules, then the front end modules, then copy this, then...".
 
 ## Better living through Makefiles
 
-A Makefile is a text file which defines a number of build 'targets', each of which could depend on different targets first. Each then lists the instructions for making that target, for example copying files or compiling code. In general, the target is the path of a file - typically something which is created by that part of the build; otherwise any label can be given to a target. This is called a dummy target. If the target is a file and it exists on the file system and is up to date, then that step will be skipped.
+A Makefile is a text file which defines a number of build 'targets', each of which could depend on different targets first. Each then lists the instructions for making that target; for example, copying files or compiling code. In general, the target is the path of a file - typically something which is created by that part of the build; otherwise any label can be given to a target. This is called a dummy target. If the target is a file and it exists on the file system and is up to date, then that step will be skipped.
 
 To execute a target, you run `make [target]`, eg: `make build`, `make clean`, or simply just `make`. As a convention, the first target you should declare in a Makefile is called 'all'. This is what is executed when invoked without a target specified -- not because it's called "all" but because it's first.
 
@@ -125,7 +125,7 @@ What this is saying is that to build myLib.js (`$(TARGET)`), it depends on a fil
 
 If you were to run this now, you'd see the build do its thing: the node modules downloaded and then your source files would be combined and written to the output file. Sweet! Run it again, and you'll see a message "make: Nothing to be done for \`all'". This means that make has detected that everything is up to date and so it doesn't need to do anything -- this is a key goal of a build process as it means you won't be wasting time downloading or rebuilding things which don't need it -- but hang on, how does it know it's up to date? In this case, it is looking at the dependencies of the target and sees that you now have a file in `myLib.js` and therefore its job is done. That's good, but if you change one of your source files and run make, it will happily tell you there's nothing to be done again, leaving you with an out of date library! Bummer!
 
-To fix this, we need to tell it which files will influence the build, potentially making the final file out of date, so by collecting a list of all the source files and listing them as dependencies, an update to any one of them will make the target rebuild. Rather than manually list them all (which could be error-prone), you can just use a shell command in the Makefile.
+To fix this, we need to tell it which files will influence the build, potentially making the final file out of date, so by collecting a list of all the source files and listing them as dependencies, an update to any one of them will make the target rebuild. Rather than manually list them all (which could be tedious and error-prone), you can just use a shell command in the Makefile.
 
 ```bash
 TARGET=myLib.js
@@ -164,7 +164,7 @@ all: build
 build: $(TARGET)
 
 clean:
-    rm -f $(TARGET)
+    rm -rf $(TARGET) node_modules
 
 $(TARGET): $(RJS) $(SRC_FILES)
   $(RJS) -o $(BUILD_OPTIONS) out=$(TARGET)
@@ -259,14 +259,16 @@ Again, it's a simple one-liner in your Makefile.
 
 ```bash
 mobile: $(RJS) convert
-  $(RJS) -o $(BUILD_OPTIONS) baseUrl=$(TMP_DIR) out=myLibrary.mobile.js paths.jquery="jquery-2.0.js"
+  $(RJS) -o $(BUILD_OPTIONS) out=myLibrary.mobile.js paths.jquery="jquery-2.0.js"
 ```
+
+The `paths` option passed into r.js changes which file is retrieved when using `require`. The source code would contain something like `$ = require('jquery')`, and this option changes it so that jQuery 2.0 is used.
 
 ### Custom lodash builds
 
 If you want to use some of the functions provided by [Underscore][underscore], but are wary of increasing the file size of your library, switching to [lodash][lodash] is a good idea, since it provides Underscore compatibility, but with a powerful [customisable build process][lodash-custom]. I won't go too much into the options of lodash, but here's an example of how you might integrate it with your Makefile.
 
-Lodash is shipped as an NPM module, and it provides an executable for generating a build, so those will need to be added as dependencies.
+Lodash is shipped as an NPM module named `lodash-cli`, and it provides an executable for generating a build, so those will need to be added as dependencies.
 
 ```bash
 LODASH=node_modules/lodash/build.js
@@ -281,7 +283,7 @@ $(LODASH_LIB): $(LODASH)
   $(LODASH) include=throttle,extend,bindAll exports=amd --output $(LODASH_LIB) --minify
 
 build:
-  $(RJS) {{as above}} paths._=$(LODASH_MODULE)
+  $(RJS) -o $(BUILD_OPTIONS) out=myLibrary.mobile.js paths._="$(LODASH_MODULE)"
 ```
 
 Lodash also has a `mobile` mode which could be used in combination with a mobile-specific build to further reduce file size and increase performance.
