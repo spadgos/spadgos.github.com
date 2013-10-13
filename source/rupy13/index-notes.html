@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Build Yrself Clean</title>
+
+    <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+    <meta name="author" content="Hakim El Hattab">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/reveal.min.css">
+    <link rel="stylesheet" href="css/sc.css">
+    <link rel="stylesheet" href="css/theme/soundcloud.css" id="theme">
+
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+    <link rel="icon" href="https://a2.sndcdn.com/assets/images/sc-icons/favicon-154f6af5.ico">
+    <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+    <script>
+      document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+    </script>
+    <style>
+      .reveal h1 {
+        font-size: 3.0em;
+      }
+      .reveal h1 small {
+        font-size: 40%;
+        line-height: 2;
+      }
+      section[data-background] h1 {
+        background: rgba(255, 255, 255, 0.7);
+        color: #000;
+      }
+      section[data-background] {
+        background-size: contain;
+      }
+    </style>
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <div class="slides">
+        <section data-background="drink-me.jpg" data-background-size="contain">
+          <h1>
+            Build Yrself Clean<br>
+            <small>From source to browser, making it fast</small><br>
+            <small>Nick Fisher @spadgos</small>
+          </h1>
+        </section>
+        <section>
+          <img style="float: right" src="alice-tall.jpg">
+          <h2>About me</h2>
+          <p class="fragment"><img style="width: 250px" src="JavaScript-logo.png"></p>
+          <p class="fragment"><img style="width: 250px" src="Brandenburger_Tor_abends.jpg"></p>
+          <p class="fragment"><img style="width: 250px" src="cloud.png"></p>
+        </section>
+
+        <section data-background="tweedle-dee-dum.jpg" data-background-size="contain">
+          <h1>A short history</h1>
+        </section>
+
+        <section>
+          <h2>
+            The web has come<br>
+            <span style="font-size: 150%; line-height: 1.5">a long way</span>
+          </h2>
+        </section>
+
+        <section>
+          <img src="space-jam.png">
+          <a href="http://www2.warnerbros.com/spacejam/movie/jam.htm">http://www2.warnerbros.com/spacejam/movie/jam.htm</a>
+        </section>
+
+        <section>
+          <iframe src="http://www.dynamicdrive.com/dynamicindex13/kisstrail.htm" width="100%" height="500"></iframe>
+          <aside class="notes">
+            Toy scripts, annoyances. Important thing is how it was served: inline.
+          </aside>
+        </section>
+
+        <section>
+          <img src="old-gmail.gif">
+        </section>
+
+        <section data-background="gryphon.jpg" data-background-size="contain">
+          <div class="fragment" style="background-color: rgba(255, 255, 255, 0.8)"><strong>"if you don't know what to uglify is, you are a simpleton."</strong></div>
+          <cite class="fragment">- Lewis Carroll<br>1865</cite>
+          <aside class="notes">
+            2007, thinking about how code is sent. Steve Souders writing about performance, tools like YSlow showed us the problems. Reducing HTTP, basic minification became common. This progressed ^. Style was still to combine all files
+          </aside>
+        </section>
+
+        <section>
+          <h2>Modular code</h2>
+          <p>RequireJS, Browserify</p>
+          <p>Better tools for builds: r.js</p>
+        </section>
+        <section>
+          <h1>Optimisation</h1>
+          <p class="fragment"><strike>Reducing size &amp; HTTP requests by minification</strike></p>
+          <p class="fragment">Improve network performance</p>
+          <p class="fragment">Improve runtime performance</p>
+          <aside class="notes">
+            Good build does more than just reduce file size. That's good but we've all got that already.<br>
+            Some of these techniques will require you to change your style or stop using features of the language
+          </aside>
+        </section>
+        <section data-background="rabbit-announce.jpg" data-background-size="contain">
+          <h1><small>Let's get down to business...</small></h1>
+        </section>
+        <section>
+          <h1>Asset hashing</h1>
+          <img src="hatter.jpg" style="width: 50%">
+          <aside class="notes">
+            What are assets? -- problem every web developer has faced
+          </aside>
+        </section>
+        <section data-state="code">
+          <h2>Previous solutions</h2>
+          <pre><code data-trim>
+            &lt;img src="/imgs/my-image.jpg?v=1">
+&lt;script href="/scriptz.js?t=1381047402">
+          </code></pre>
+          <aside class="notes">
+            Couple of problems here: if you're bumping that version wholesale, invalidating all the caches. Also, depending on all the different caching layers between your server and the browser, by default they might not be set up to include the query string
+          </aside>
+        </section>
+        <section data-state="code">
+          <h2>A better solution</h2>
+          <p>Use an <b>identifying</b> hash</p>
+          <p>Checksum of contents, Git commit SHA, whatever</p>
+          <pre class="fragment"><code data-trim>
+            /src/imgs/my-image.jpg --> /target/imgs/my-image-1a2b3c.jpg
+          </code></pre>
+          <p class="fragment">Simplifies caching: cache forever!</p>
+          <p class="fragment">Multiple versions side by side</p>
+          <pre class="fragment"><code data-trim>
+            &lt;img src="/imgs/my-image-1a2b3c.jpg">
+          </code></pre>
+        </section>
+        <section>
+          <h2>Find and rewrite</h2>
+          <p class="fragment">Helper function: <code>__ASSET()</code></p>
+          <pre style="width:75%" class="fragment"><code data-trim>
+            var imgPath = __ASSET('/imgs/my-image.jpg');
+          </code></pre>
+          <div class="fragment">
+            <p>During development:</p>
+            <pre style="width:75%"><code data-trim>
+              function __ASSET(path) { return path; }
+            </code></pre>
+          </div>
+          <p class="fragment">During production, removed altogether.</p>
+          <aside class="notes">
+            Easy for CSS and templates, regex works ok; not so much for JS. ASSET is a way of identifying strings which refer to assets
+          </aside>
+        </section>
+        <section>
+          <h2>Quick digression: ASTs</h2>
+          <p>Abstract syntax trees</p>
+          <p>Tree representation of the structure of code</p>
+        </section>
+        <section data-state="code">
+          <pre><code data-trim>
+if (x > 100) return y;
+else         return z;
+          </code></pre>
+          <img class="fragment" src="ast.png">
+        </section>
+        <section data-state="code">
+          <h2>AST Manipulation</h2>
+          <pre><code data-trim>
+            var imgPath = __ASSET('/imgs/my-image.jpg');
+          </code></pre>
+          <pre class="fragment">
+<span class="________">var ast = Uglify.parse(fileContents);</span>
+<span class="fragment">ast.transform(</span>
+<span class="fragment">  Uglify.TreeTransformer(function (node) {</span>
+<span class="fragment">    if (node instanceof Uglify.AST_Call) {</span>
+<span class="fragment">      if (node.expression.name === '__ASSET') {</span>
+<span class="fragment">        return new Uglify.AST_String({</span>
+<span class="fragment">          value: addAssetHash(node.args[0].value)
+<span class="________">        });</span>
+<span class="fragment">      }
+<span class="________">    }</span>
+<span class="________">  })</span>
+<span class="________">);</span></span>
+          </pre>
+          <pre class="fragment"><code data-trim>
+            var imgPath = '/imgs/my-image-1a2b3c.jpg';
+          </code></pre>
+        </section>
+        <section data-state="code">
+          <h2>A small downside</h2>
+          <p>No dynamic naming.</p>
+          <pre class="fragment"><code data-trim>
+defaultImgs = {
+  '20x20': __ASSET('imgs/default_20x20.png'),
+  '50x50': __ASSET('imgs/default_50x50.png'),
+  '90x90': __ASSET('imgs/default_90x90.png')
+};
+          </code></pre>
+          <p class="fragment">A small upside: you now have explicit dependencies</p>
+        </section>
+
+        <section>
+          <h1>Bucketing scripts</h1>
+          <img src="walrus-carpenter.jpg">
+        </section>
+        <section>
+          <img style="width: 100%" src="all-to-one.png">
+        </section>
+        <section>
+          <img style="width: 100%" src="all-to-buckets.png">
+        </section>
+        <section>
+          <h2>Parallel loading</h2>
+          <img style="width: 100%" src="app-start-comparison.png">
+        </section>
+        <section>
+          <h2>More effective caching</h2>
+          <img style="width: 100%" src="caching.png">
+        </section>
+        <section>
+          <h1>Domain sharding</h1>
+          <img src="giant-alice.jpg" style="width: 80%">
+        </section>
+        <section>
+          <h2>Per domain connection limits</h2>
+          <p>Chrome, Firefox, Safari, Opera: <strong>6 per domain</strong></p>
+          <p>IE: <strong>8 per domain</strong></p>
+          <p>Median # of requests to one domain: <b>39</b></p>
+          <cite>
+          <a href="http://www.browserscope.org/?category=network&amp;v=1">browserscope.org</a><br>
+          <a href="http://www.stevesouders.com/blog/2013/09/05/domain-sharding-revisited/">stevesouders.com/blog</a><br>
+          <a href="http://bigqueri.es/t/max-requests-to-one-hostname/67/2">HTTP Archives at BigQueries</a>
+        </cite>
+        </section>
+        <section>
+          <h2>Waterfall of doom</h2>
+          <img src="asset-waterfall-notes1.png">
+        </section>
+        <section>
+          <h2>Split assets across multiple domains</h2>
+          <img src="asset-waterfall-notes2.png">
+        </section>
+        <section data-state="code">
+          <h2>Asset rewriting</h2>
+          <pre><code data-trim>
+__ASSET('/imgs/bullet.png')
+  '//a1.site.com/imgs/bullet-1a2b3c.png'
+
+__ASSET('/imgs/logo.png')
+  '//a3.site.com/imgs/logo-4d5e6f.png'
+          </code></pre>
+        </section>
+
+        <section>
+          <h1>Lazy require calls</h1>
+          <img src="curtain.jpg">
+        </section>
+        <section data-state="code">
+          <pre><code data-trim>
+var URL    = require('lib/url'),
+    View   = require('lib/view'),
+    Router = require('router');
+
+module.exports = View.extend({
+  onClick: function () {
+    Router.navigate(
+      URL.stringify([
+        baseUrl,
+        this.id // or whatever
+      ])
+    );
+  }
+});
+          </code></pre>
+        </section>
+
+        <section data-state="code">
+          <pre><code data-trim>
+var URL    = require('lib/url'),  // defined here,
+    View   = require('lib/view'), // here,
+    Router = require('router');   // and here.
+
+module.exports = View.extend({    // only used here,
+  onClick: function () {
+    Router.navigate(              // here (maybe),
+      URL.stringify([             // and here (maybe).
+        baseUrl,
+        this.id
+      ])
+    );
+  }
+});
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>AST transformations again</h2>
+          <p>Step 1: Find all <code style="background-color: #ff9; padding: 0 .3em;">foo = require('bar')</code>, remove.</p>
+          <p>Step 2: Replace with a delayed and cached call.</p>
+        </section>
+
+        <section data-state="code">
+          <pre><code data-trim>
+var URL,
+    View,
+    Router;
+
+module.exports = (View || (View = require('lib/view'))).extend({
+  onClick: function () {
+    (Router || (Router = require('router'))).navigate(
+      (URL || (URL = require('lib/url'))).stringify([
+        baseUrl,
+        this.id
+      ])
+    );
+  }
+});
+          </code></pre>
+        </section>
+        <section>
+          <h1>Targetted builds</h1>
+          <img src="delivery.jpg" style="width: 50%">
+          <aside class="notes">
+            Make a build of your code specifically for a target env, eg: a group of browsers.
+            Technique becoming more popular, especially with libraries. jQuery and Lodash.
+          </aside>
+        </section>
+        <section data-state="code">
+          <h2>Choose your environment</h2>
+          <div class="fragment">
+            <p>Mobile, legacy, modern...</p>
+            <pre class="fragment"><code data-trim>
+if (__ENV__ === 'mobile') {
+  // add touch events, etc
+}
+            </code></pre>
+            <pre class="fragment"><code data-trim>
+if (__ENV__ === 'legacy') { // eg: IE &lt;= 8?
+  // polyfill ES5 functions, etc
+}
+            </code></pre>
+            <pre class="fragment"><code data-trim>
+var _ = __ENV__ === 'modern'
+      ? require('lodash-modern')
+      : require('lodash-compat');
+            </code></pre>
+          </div>
+        </section>
+        <section data-state="code">
+          <p>Variables can be set at build time</p>
+          <pre><code data-trim>
+ast.transform(Uglify.Compressor({
+  global_defs: {
+    __ENV__: 'modern'
+  }
+}))
+          </code></pre>
+          <p class="fragment">Dead code automatically removed during minification</p>
+          <pre class="fragment"><code data-trim>
+var _ = __ENV__ === 'modern'
+      ? require('lodash-modern')
+      : require('lodash-compat');
+
+// becomes
+var _ = require('lodash-modern');
+          </code></pre>
+          <aside class="notes">
+            Use feature detection or browser sniffing to load the right package in the browser
+          </aside>
+        </section>
+        <section>
+          <h1>Page specific packages</h1>
+          <img src="tweedle-dee.jpg" style="width: 75%">
+        </section>
+        <section>
+          <h2>What?</h2>
+          <p>Split modules into 'core' and 'page specific'</p>
+          <h2 class="fragment">Why? When?</h2>
+          <p class="fragment">When your total size is getting too large.</p>
+          <p class="fragment">When low traffic pages contain a lot of unique code.</p>
+        </section>
+        <section>
+          <h2>How?</h2>
+          <style type="text/css">
+            #imgs {
+              position: relative;
+            }
+            #imgs .fragment {
+              position: absolute;
+              top: 0;
+              width: 100%;
+              left: 2.5%;
+            }
+          </style>
+          <div id="imgs">
+            <img src="files1.png">
+            <img src="files2.png" class="fragment">
+            <img src="files3.png" class="fragment">
+            <img src="files4.png" class="fragment">
+            <img src="files5.png" class="fragment">
+          </div>
+          <aside class="notes">
+            These represent all the files in your source directory
+          </aside>
+        </section>
+        <section data-background="paint-roses.jpg" data-background-size="contain">
+          <h1>In summary</h1>
+          <aside class="notes">
+            We've gone through a handful of techniques here which can really help to get your web application loading faster and running faster. Some of them may be useful for your app, but hopefully you're now thinking about other ways to make use of your build.
+          </aside>
+        </section>
+        <section data-state="title-slide">
+          <h1>Thanks!</h1>
+          <h3>Nick Fisher, @spadgos</h3>
+          http://spadgos.github.io/rupy13
+        </section>
+      </div>
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.min.js"></script>
+
+    <script type="text/javascript">
+
+      // Full list of configuration options available here:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: false,
+        // Display a presentation progress bar
+        progress: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+        // Enable the slide overview mode
+        overview: false,
+        // Vertical centering of slides
+        center: true,
+        // Loop the presentation
+        loop: false,
+        // Change the presentation direction to be RTL
+        rtl: false,
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+        // Apply a 3D roll to links on hover
+        rollingLinks: false,
+        // Transition style
+        transition: 'linear', // default/cube/page/concave/zoom/linear/fade/none
+
+        // theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        // transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+        ]
+      });
+
+    </script>
+
+  </body>
+</html>

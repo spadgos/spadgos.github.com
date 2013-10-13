@@ -1,0 +1,9 @@
+Build Yrself Clean
+------------------
+
+Javascript development has come a long way in the last ten years. Aside from its meteoric rise in terms of popularity and discovered functionality, web apps using Javascript have seen a rise in complexity when it comes to packaging and delivery of application code. Long gone are the days of sending individual, unminified files to the browser, replaced now with the combine-and-minify approach, but as client applications get fatter, the days are numbered for this method too.
+
+The good news here is that Javascript development and tooling has been moving in a direction that puts us in a great position to level up the way that code is delivered, and of course, when it comes to modifying Javascript, what better language is there to use than Javascript itself?
+
+In this talk, I'll be discussing the options for managing your build process, looking at third party systems, but more importantly, how you can put your own together for the ultimate custom build.
+
