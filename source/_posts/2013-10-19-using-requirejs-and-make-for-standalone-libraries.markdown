@@ -1,10 +1,10 @@
 ---
 layout: post
 title: "Using RequireJS and Make for standalone libraries"
-date: 2013-09-09 20:06
+date: 2013-10-19 16:38
 comments: true
-published: false
 categories: 
+published: true
 ---
 
 Modular code is great. For both development and ongoing maintainence, it brings you many benefits, however most discussion in this area is focussed on writing modular *applications*. Modular code belongs in all parts of your development, in particular I want to talk about using it when developing a standalone library. The most popular library for client-side modules is [RequireJS][requirejs], so I will focus on that.
