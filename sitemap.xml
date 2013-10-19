@@ -43,8 +43,14 @@
         <lastmod>2012-06-03T07:16:46+02:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://spadgos.github.com/blog/2013/10/19/using-requirejs-and-make-for-standalone-libraries/
+        </loc>
+        <lastmod>2013-10-19T16:49:15+02:00</lastmod>
+    </url>
+    <url>
         <loc>http://spadgos.github.com/</loc>
-        <lastmod>2013-08-14T10:24:58+02:00</lastmod>
+        <lastmod>2013-10-19T16:49:15+02:00</lastmod>
     </url>
     <url>
         <loc>http://spadgos.github.com/about/</loc>
@@ -52,6 +58,6 @@
     </url>
     <url>
         <loc>http://spadgos.github.com/blog/archives/</loc>
-        <lastmod>2013-08-14T10:24:58+02:00</lastmod>
+        <lastmod>2013-10-19T16:49:15+02:00</lastmod>
     </url>
 </urlset>

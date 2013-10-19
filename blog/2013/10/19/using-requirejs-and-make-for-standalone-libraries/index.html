@@ -1,0 +1,693 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Using RequireJS and Make for standalone libraries - nickf on code</title>
+  <meta name="author" content="Nick Fisher">
+
+  
+  <meta name="description" content="Modular code is great. For both development and ongoing maintainence, it brings you many benefits, however most discussion in this area is focussed &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://spadgos.github.com/blog/2013/10/19/using-requirejs-and-make-for-standalone-libraries">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="nickf on code" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-25824270-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">nickf on code</a></h1>
+  
+    <h2>Javascript and code nerdity</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Using RequireJS and Make for Standalone Libraries</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-19T16:38:00+02:00" pubdate data-updated="true">Oct 19<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Modular code is great. For both development and ongoing maintainence, it brings you many benefits, however most discussion in this area is focussed on writing modular <em>applications</em>. Modular code belongs in all parts of your development, in particular I want to talk about using it when developing a standalone library. The most popular library for client-side modules is <a href="http://requirejs.org/">RequireJS</a>, so I will focus on that.</p>
+
+<h2>Case study</h2>
+
+<p>A few months ago, I closed a long-standing issue on a unit test framework I built, called <a href="https://github.com/spadgos/tyrtle">Tyrtle</a>: to break the source into more manageable pieces. The code had grown to almost 1500 lines and it was getting very difficult to work on. After spending a day getting it all together, in the end I had a much simpler project which was a lot more maintainable, at the cost of a couple more kilobytes. These are some things I&rsquo;d recommend from my experience: there&rsquo;s definitely different ways to achieve the same effect, or even maybe some better practices out there, but this is what I&rsquo;ve found so far.</p>
+
+<h2>Some important questions</h2>
+
+<h3>Should I use modules?</h3>
+
+<p>It depends. If your code is of a certain size (upwards of ~600 lines), then you could probably get some benefit separating the code into modules in individual files. But below this, you have to consider that it does introduce some overhead.</p>
+
+<p>Though RequireJS is quite a large library, the author, <a href="https://github.com/jrburke">James Burke</a> has thankfully produced a minimal library which provides the same interface but just a small subset of features, which will still be fine for our purposes. This is called <a href="https://github.com/jrburke/almond">almond</a> and it&rsquo;s only 2kb after minification. If 2kb is too significant a percentage of your library&rsquo;s size, then you probably should stick to a single file.</p>
+
+<h3>Do I check in the compiled library?</h3>
+
+<p>This is up to you, and there are differing opinions here. My opinion on this is that you should.</p>
+
+<p>In theory, you should be able to put your whole project on Github with a nice Makefile and README and let everyone build it for themselves, but in reality, that&rsquo;s more effort than most people are willing to invest, so most libraries provide a simple ready-to-go version somewhere in the repo.</p>
+
+<p><em>When</em> exactly you run the build and check in the compiled version is up to you. Some libraries will do it for every commit, others only update the precompiled version when there&rsquo;s an officially tagged release. If you go with updating on each commit, make sure your users know that file is not necessarily a stable version to use.</p>
+
+<p>You should also decide now where the compiled version of your library will live. Sometimes it&rsquo;s just in the root, other times it&rsquo;s put into a subdirectory (named <code>dist</code>, for example), especially if there are a few different versions included in each build.</p>
+
+<p>Having the built library in the repository itself will be useful if you want your library to be used with client-side package managers such as Bower.</p>
+
+<p>The arguments against checking in the built library are all quite valid: in general, it is considered bad practice to check in build artefacts; and it increases confusion for other developers wanting to contribute. You will just need to weigh the ease-of-use of your library against these concerns. If you did want to avoid checking in build artefacts, yet still provide a simple version for your users, one suggestion would be to create another repository for stable releases, and then also provide configuration tailored to a particular package manager (eg: a <code>component.json</code> file for Bower).</p>
+
+<h3>Application structure</h3>
+
+<p>Put all your source code for the library itself into a subdirectory, called <code>src</code> or similar. All other code, including the build configuration and tests all live outside, in their own directories (<code>/build</code>, <code>/tests</code>) or in the root if there&rsquo;s only one or two files.</p>
+
+<p>Splitting up the source files into directories can follow the same guidelines you&rsquo;d use for any other project, but unless you have a very large number of modules, it is unlikely you&rsquo;ll need to go any deeper than just <code>/src</code>.</p>
+
+<h3>AMD? CommonJS?</h3>
+
+<p>I recommend CommonJS. For the code to run in the browser, you&rsquo;ll need to use AMD modules, but converting to AMD is simple (covered below), and lets you avoid writing meaningless boilerplate. So, just like a nodejs module, just use <code>require</code>, <code>module</code> or <code>exports</code> as if they were available in scope.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">someModule</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;someModule&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">someModule</span><span class="p">.</span><span class="nx">extend</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Get the libraries</h2>
+
+<p>Obviously in building a project with RequireJS should start with bringing in the library. Install it with <a href="https://npmjs.org/">npm</a> but make sure it&rsquo;s in your <code>package.json</code> file by using the <code>--save</code> flag:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>npm install --save requirejs
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When you install this, it will create a link to a binary of <code>r.js</code> as <code>node_modules/.bin/r.js</code>. r.js is RequireJS&rsquo;s command line tool for converting and combining files.</p>
+
+<p>We&rsquo;ll also need almond, so <a href="https://github.com/jrburke/almond">grab the library</a> and put it into <code>/vendor</code>. We&rsquo;ll come back to this later.</p>
+
+<h2>Write modular!</h2>
+
+<p>Start developing your library (or converting your existing one), putting each logical module of code into its own file. When there&rsquo;s an interdependency, you specifically import the modules you need. When it comes time to run or deploy your code, you&rsquo;ll need to glue it back together, which brings us to the build step.</p>
+
+<h2>Automating the build</h2>
+
+<p>The overall goal here is to make your life easier, and as every good programmer knows, the key to an easy life is automation, so we&rsquo;ll configure as we go. There&rsquo;s a ton of systems you can choose for automation, including Makefiles, Cakefiles, Rakefiles, Jakefiles, GruntJS and more. For what we need, I recommend using a Makefile. It might not appear to be the most intuitive interface, but it&rsquo;s very powerful and could win purely on ubiquity. It was created in 1977, and is widely known by developers of many different languages. This benefit is not to be underestimated: there is a ton of great documentation, community knowledge and <a href="http://wiki.osdev.org/Makefile">best practices</a> to help you along the way.</p>
+
+<p>With a good Makefile (or any other tool you choose), your project&rsquo;s build instructions should be to run one simple command, and never &ldquo;Install the node modules, then the front end modules, then copy this, then&hellip;&rdquo;.</p>
+
+<h2>Better living through Makefiles</h2>
+
+<p>A Makefile is a text file which defines a number of build &lsquo;targets&rsquo;, each of which could depend on different targets first. Each then lists the instructions for making that target; for example, copying files or compiling code. In general, the target is the path of a file &ndash; typically something which is created by that part of the build; otherwise any label can be given to a target. This is called a dummy target. If the target is a file and it exists on the file system and is up to date, then that step will be skipped.</p>
+
+<p>To execute a target, you run <code>make [target]</code>, eg: <code>make build</code>, <code>make clean</code>, or simply just <code>make</code>. As a convention, the first target you should declare in a Makefile is called &lsquo;all&rsquo;. This is what is executed when invoked without a target specified &mdash; not because it&rsquo;s called &ldquo;all&rdquo; but because it&rsquo;s first.</p>
+
+<p>One little gotcha to watch out for: the indentation is important in Makefiles, and <em>must be done with a tab character</em>. If you indent with spaces, you&rsquo;ll get a nasty and confusing error message, specifically: <code>Makefile:2: *** missing separator.  Stop.</code></p>
+
+<p>Starting from the start, we want the <code>build</code> step to run when you type <code>make</code>. Create a file in your directory root and name it <code>Makefile</code> (with no extension) and enter this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>all: build
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This declares a dummy target called <code>all</code> which depends upon another dummy target named <code>build</code>. Creating targets such as this which contain no actions of their own is fine, and can often help to split up a large build process into smaller logical steps. Now we need to define the <code>build</code> target. The <code>build</code> step can be considered done if the output library file exists and is up to date, so we can add that as a target itself. To avoid repetition, it makes things easier to use variables here. Variables can be used in the target names as well as in any commands a target defines.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># target is the final output file for your library</span>
+</span><span class='line'><span class="nv">TARGET</span><span class="o">=</span>myLib.js
+</span><span class='line'><span class="nv">BUILD_OPTIONS</span><span class="o">=</span>build/build.js
+</span><span class='line'><span class="nv">RJS</span><span class="o">=</span>node_modules/.bin/r.js
+</span><span class='line'>
+</span><span class='line'>all: build
+</span><span class='line'>
+</span><span class='line'>build: <span class="k">$(</span>TARGET<span class="k">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">$(</span>TARGET<span class="k">)</span>:
+</span><span class='line'>  <span class="k">$(</span>RJS<span class="k">)</span> -o <span class="k">$(</span>BUILD_OPTIONS<span class="k">)</span> <span class="nv">out</span><span class="o">=</span><span class="k">$(</span>TARGET<span class="k">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>$(BUILD_OPTIONS)</code> are for the r.js tool, and we&rsquo;ll come to that soon, but apart from that, you&rsquo;ve actually pretty much got everything you need: the files in the source directory are converted to AMD, combined and saved. Except&hellip;</p>
+
+<h3>Declare the dependencies</h3>
+
+<p>Remember we said that the build process should be just <code>make</code>? Nowhere in here does it <em>declare</em> that a target depends on r.js, it just assumes it&rsquo;ll be in that location. The steps to make sure this exists should be added as a target and set as a dependency where needed:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="k">$(</span>TARGET<span class="k">)</span>: <span class="k">$(</span>RJS<span class="k">)</span>
+</span><span class='line'>  <span class="k">$(</span>RJS<span class="k">)</span> -o <span class="k">$(</span>BUILD_OPTIONS<span class="k">)</span> <span class="nv">out</span><span class="o">=</span><span class="k">$(</span>TARGET<span class="k">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">$(</span>RJS<span class="k">)</span>:
+</span><span class='line'>    npm install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What this is saying is that to build myLib.js (<code>$(TARGET)</code>), it depends on a file existing in <code>node_modules/.bin/r.js</code> (<code>$(RJS)</code>). If it <em>doesn&rsquo;t</em> exist, then run <code>npm install</code>.</p>
+
+<p><em>Now, you&rsquo;d be right in pointing out that <code>npm</code> is an undeclared dependency in this case, and that npm will in turn rely on Node. You will need to set some baseline expectation for the environment you&rsquo;re expecting it to be run in. For a javascript library, I think you&rsquo;d be safe in assuming NodeJS and NPM are available, but that&rsquo;s up to you. For applications I&rsquo;m working on at SoundCloud, we assume nothing (well, very very little) about the environment the code is executing in, and hence, the build script will actually download and compile Node and Nginx during a build. This is a good practice, since you can be guaranteed of the environment if you build it yourself, however I&rsquo;d say it&rsquo;s overkill for just a library.</em></p>
+
+<h3>Build only when needed</h3>
+
+<p>If you were to run this now, you&rsquo;d see the build do its thing: the node modules downloaded and then your source files would be combined and written to the output file. Sweet! Run it again, and you&rsquo;ll see a message &ldquo;make: Nothing to be done for `all&#8217;&rdquo;. This means that make has detected that everything is up to date and so it doesn&rsquo;t need to do anything &mdash; this is a key goal of a build process as it means you won&rsquo;t be wasting time downloading or rebuilding things which don&rsquo;t need it &mdash; but hang on, how does it know it&rsquo;s up to date? In this case, it is looking at the dependencies of the target and sees that you now have a file in <code>myLib.js</code> and therefore its job is done. That&rsquo;s good, but if you change one of your source files and run make, it will happily tell you there&rsquo;s nothing to be done again, leaving you with an out of date library! Bummer!</p>
+
+<p>To fix this, we need to tell it which files will influence the build, potentially making the final file out of date, so by collecting a list of all the source files and listing them as dependencies, an update to any one of them will make the target rebuild. Rather than manually list them all (which could be tedious and error-prone), you can just use a shell command in the Makefile.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">TARGET</span><span class="o">=</span>myLib.js
+</span><span class='line'><span class="c"># find, in the &#39;src&#39; directory, all the files with a name ending in .js</span>
+</span><span class='line'><span class="nv">SRC_FILES</span><span class="o">=</span><span class="k">$(</span>shell find src -type f -name <span class="s2">&quot;*.js&quot;</span><span class="k">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">BUILD_OPTIONS</span><span class="o">=</span>build/build.js
+</span><span class='line'><span class="nv">RJS</span><span class="o">=</span>node_modules/.bin/r.js
+</span><span class='line'>
+</span><span class='line'>all: build
+</span><span class='line'>
+</span><span class='line'>build: <span class="k">$(</span>TARGET<span class="k">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">$(</span>TARGET<span class="k">)</span>: <span class="k">$(</span>RJS<span class="k">)</span> <span class="k">$(</span>SRC_FILES<span class="k">)</span>
+</span><span class='line'>  <span class="k">$(</span>RJS<span class="k">)</span> -o <span class="k">$(</span>BUILD_OPTIONS<span class="k">)</span> <span class="nv">out</span><span class="o">=</span><span class="k">$(</span>TARGET<span class="k">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">$(</span>RJS<span class="k">)</span>:
+</span><span class='line'>    npm install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now run <code>make</code> and you&rsquo;ll see the build happening. Run it again, nothing will happen. Edit any source file, and it will build again. Perfect.</p>
+
+<h3>Cleanliness&hellip;</h3>
+
+<p>One final thing to mention about Makefiles (and any other build automation) is they should offer a way to restore back to a &ldquo;clean&rdquo; state, as if make had never been executed. By convention, this is defined in a target called &ldquo;clean&rdquo;.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">TARGET</span><span class="o">=</span>myLib.js
+</span><span class='line'><span class="nv">SRC_FILES</span><span class="o">=</span><span class="k">$(</span>shell find src -type f -name <span class="s2">&quot;*.js&quot;</span><span class="k">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">BUILD_OPTIONS</span><span class="o">=</span>build/build.js
+</span><span class='line'><span class="nv">RJS</span><span class="o">=</span>node_modules/.bin/r.js
+</span><span class='line'>
+</span><span class='line'>all: build
+</span><span class='line'>
+</span><span class='line'>build: <span class="k">$(</span>TARGET<span class="k">)</span>
+</span><span class='line'>
+</span><span class='line'>clean:
+</span><span class='line'>    rm -rf <span class="k">$(</span>TARGET<span class="k">)</span> node_modules
+</span><span class='line'>
+</span><span class='line'><span class="k">$(</span>TARGET<span class="k">)</span>: <span class="k">$(</span>RJS<span class="k">)</span> <span class="k">$(</span>SRC_FILES<span class="k">)</span>
+</span><span class='line'>  <span class="k">$(</span>RJS<span class="k">)</span> -o <span class="k">$(</span>BUILD_OPTIONS<span class="k">)</span> <span class="nv">out</span><span class="o">=</span><span class="k">$(</span>TARGET<span class="k">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">$(</span>RJS<span class="k">)</span>:
+</span><span class='line'>    npm install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now (once we get the r.js build options sorted), building is as simple (and as standard) as <code>make</code>.</p>
+
+<h2>r.js build options</h2>
+
+<p>In the Makefile, we referenced a file at <code>build/build.js</code> which contains the r.js build options and now we should fill them out.</p>
+
+<p>These options are an extension to the requirejs configuration, for example, setting the base path of your source files, shimming non-AMD-ready third-party modules, or defining special paths for certain module names. There are several addition options for r.js</p>
+
+<ul>
+<li><code>include</code> defines a list of files to add into the build. The modules required by these files (using <code>require('some/module')</code>) will also be found by the r.js tool and automatically included in an optimal order. Here, you should include the base entry point for your library &mdash; that is, module which exports the library itself. Here is where, you can include <a href="https://github.com/jrburke/almond">almond</a>, which will provide us the basic interface needed for AMD modules to work.</li>
+<li><code>optimize</code> defines which sort of minification you&rsquo;d like to use.</li>
+<li><code>cjsTranslate</code> will convert CommonJS modules to AMD modules</li>
+<li><code>wrap</code> is the most important part of this configuration. If you were just to combine your files into one, all would be declared in global scope, quite possibly interfering with other application code (especially so if the application is using requirejs). The <code>wrap</code> configuration lets you define fragments of code to prepend and append to the combined file, and this will be how your library is exposed to the application. Using <a href="https://github.com/umdjs/umd">UMD</a> (Universal module definition), and putting its boilerplate in these fragments, we can then cater our library to whatever environment it will be used in. More on this below.</li>
+</ul>
+
+
+<p><em>Thorough documentation for r.js is strangely difficult to find, but the best source I&rsquo;ve found so far is the source itself. In the r.js repo is an <a href="https://github.com/jrburke/r.js/blob/master/build/example.build.js">example build script</a> with good documentation on the options.</em></p>
+
+<p>As an example, here are the build options used for Tyrtle.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">({</span>
+</span><span class='line'>  <span class="nx">include</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;Tyrtle&quot;</span><span class="p">,</span> <span class="s2">&quot;../vendor/almond&quot;</span><span class="p">],</span>
+</span><span class='line'>  <span class="nx">optimize</span><span class="o">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">baseUrl</span><span class="o">:</span> <span class="s2">&quot;src&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">cjsTranslate</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">wrap</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">startFile</span><span class="o">:</span> <span class="s1">&#39;wrap-start.frag.js&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">endFile</span><span class="o">:</span> <span class="s1">&#39;wrap-end.frag.js&#39;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>UMD fragments</h3>
+
+<p>The UMD pattern can be implemented by using these fragments as the wrapping files in your build.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// wrap-start.frag.js</span>
+</span><span class='line'><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">root</span><span class="p">,</span> <span class="nx">factory</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">define</span> <span class="o">===</span> <span class="s1">&#39;function&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">define</span><span class="p">(</span><span class="nx">factory</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">exports</span> <span class="o">===</span> <span class="s1">&#39;object&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// change &quot;myLib&quot; to whatever your library is called</span>
+</span><span class='line'>    <span class="nx">root</span><span class="p">.</span><span class="nx">myLib</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}(</span><span class="k">this</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><em>(Your code will be inserted here.)</em></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'>  <span class="c1">// wrap-end.frag.js</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// change &quot;my-lib&quot; to your &#39;entry-point&#39; module name </span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;my-lib&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To briefly explain what is happening here: it defines an IIFE which is passed root (eg: <code>window</code> in the browser), and a factory function, which returns your library. When this code is executed at the run time of the application, if that application is using a module system with <code>define</code> (AMD), or simply assigning to <code>module.exports</code> (CommonJS), your library will be accessible as a module for the application. If neither of these are used, then your library is attached to the global scope using whatever name you decide (<code>myLib</code> in the above example).</p>
+
+<p>This style gives you a lot of flexibility, while keeping your code a good citizen which fits in to whatever is the style of the including application.</p>
+
+<h2>Mo&#8217; builds, mo&#8217; options</h2>
+
+<p>By modifying the options to the r.js Makefile, you can obviously produce a range of different outputs. Here&rsquo;s some common options and how they could fit into a Makefile.</p>
+
+<h3>Production and development builds</h3>
+
+<p>In the example r.js options above, as a unit test framework, Tyrtle had no need for minification, so the <code>optimize</code> option was set to &ldquo;none&rdquo;, since it makes the builds faster and aids debugging, but what if you wanted to provide your users with both a &lsquo;development&rsquo; and &lsquo;production&rsquo; version of your library, to save them minifying it themselves? Simple! Let&rsquo;s add a new target to the Makefile.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>minify: <span class="k">$(</span>RJS<span class="k">)</span> convert
+</span><span class='line'>  <span class="k">$(</span>RJS<span class="k">)</span> -o <span class="k">$(</span>BUILD_OPTIONS<span class="k">)</span> <span class="nv">baseUrl</span><span class="o">=</span><span class="k">$(</span>TMP_DIR<span class="k">)</span> <span class="nv">out</span><span class="o">=</span>myLibrary.min.js <span class="nv">optimize</span><span class="o">=</span>uglify
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Mobile- or platform-specific builds</h3>
+
+<p>If you want to provide different builds of your system with specialised code for a particular platform, this is made simple with requirejs&rsquo;s <code>path</code> configuration. Though it has many uses, you can use it to dynamically alias a module name to a particular file, and r.js allows you to change this configuration on the fly.</p>
+
+<p>A mobile-specific build of a library might allow you to leave out large sections of code (eg: if it were optionally interfacing with Flash), or use jQuery 2.0 instead of 1.9, since supporting old IE would no longer be necessary.</p>
+
+<p>Again, it&rsquo;s a simple one-liner in your Makefile.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mobile: <span class="k">$(</span>RJS<span class="k">)</span> convert
+</span><span class='line'>  <span class="k">$(</span>RJS<span class="k">)</span> -o <span class="k">$(</span>BUILD_OPTIONS<span class="k">)</span> <span class="nv">out</span><span class="o">=</span>myLibrary.mobile.js paths.jquery<span class="o">=</span><span class="s2">&quot;jquery-2.0.js&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>paths</code> option passed into r.js changes which file is retrieved when using <code>require</code>. The source code would contain something like <code>$ = require('jquery')</code>, and this option changes it so that jQuery 2.0 is used.</p>
+
+<h3>Custom lodash builds</h3>
+
+<p>If you want to use some of the functions provided by <a href="https://github.com/jashkenas/underscore">Underscore</a>, but are wary of increasing the file size of your library, switching to <a href="http://lodash.com/">lodash</a> is a good idea, since it provides Underscore compatibility, but with a powerful <a href="http://lodash.com/custom-builds">customisable build process</a>. I won&rsquo;t go too much into the options of lodash, but here&rsquo;s an example of how you might integrate it with your Makefile.</p>
+
+<p>Lodash is shipped as an NPM module named <code>lodash-cli</code>, and it provides an executable for generating a build, so those will need to be added as dependencies.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">LODASH</span><span class="o">=</span>node_modules/lodash/build.js
+</span><span class='line'><span class="nv">LODASH_MODULE</span><span class="o">=</span>vendor/lodash
+</span><span class='line'><span class="nv">LODASH_LIB</span><span class="o">=</span><span class="k">$(</span>LODASH_MODULE<span class="k">)</span>.js
+</span><span class='line'>
+</span><span class='line'><span class="c"># to access the builder, we just need the module</span>
+</span><span class='line'><span class="k">$(</span>LODASH<span class="k">)</span>:
+</span><span class='line'>  npm install
+</span><span class='line'>
+</span><span class='line'><span class="k">$(</span>LODASH_LIB<span class="k">)</span>: <span class="k">$(</span>LODASH<span class="k">)</span>
+</span><span class='line'>  <span class="k">$(</span>LODASH<span class="k">)</span> <span class="nv">include</span><span class="o">=</span>throttle,extend,bindAll <span class="nv">exports</span><span class="o">=</span>amd --output <span class="k">$(</span>LODASH_LIB<span class="k">)</span> --minify
+</span><span class='line'>
+</span><span class='line'>build:
+</span><span class='line'>  <span class="k">$(</span>RJS<span class="k">)</span> -o <span class="k">$(</span>BUILD_OPTIONS<span class="k">)</span> <span class="nv">out</span><span class="o">=</span>myLibrary.mobile.js paths._<span class="o">=</span><span class="s2">&quot;$(LODASH_MODULE)&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lodash also has a <code>mobile</code> mode which could be used in combination with a mobile-specific build to further reduce file size and increase performance.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="k">$(</span>LODASH_LIB_MOBILE<span class="k">)</span>: <span class="k">$(</span>LODASH<span class="k">)</span>
+</span><span class='line'>  <span class="k">$(</span>LODASH<span class="k">)</span> mobile <span class="nv">include</span><span class="o">=</span>throttle,extend,bindAll <span class="nv">exports</span><span class="o">=</span>amd --output <span class="k">$(</span>LODASH_LIB_MOBILE<span class="k">)</span> --minify
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Wrapping up</h2>
+
+<p>If you think a modular approach to building a javascript library is a good idea &mdash; and it probably is &mdash; then using requirejs and a simple Makefile will let you do everything you need with minimum fuss. There are plenty more fun things you can do in a build step, but those will have to wait for another post.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Nick Fisher</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-19T16:38:00+02:00" pubdate data-updated="true">Oct 19<span>th</span>, 2013</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/06/01/soundclouds-stack-slides-from-fluentconf-and-sfjs/" title="Previous Post: SoundCloud's Stack: Slides from FluentConf and SFJS">&laquo; SoundCloud's Stack: Slides from FluentConf and SFJS</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/10/19/using-requirejs-and-make-for-standalone-libraries/">Using RequireJS and Make for standalone libraries</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/06/01/soundclouds-stack-slides-from-fluentconf-and-sfjs/">SoundCloud's Stack: Slides from FluentConf and SFJS</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/25/citysonar/">CitySonar</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/01/csspecific-plugin-for-sublimetext/">CSSpecific plugin for SublimeText</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/30/a-soundcloud-plugin-for-jekyll-slash-octopress/">A SoundCloud plugin for Jekyll/Octopress</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  
+  <iframe width="100%" height="450" scrolling="no" frameborder="no" src="http://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Fusers%2F6431392%2Ffavorites&amp;auto_play=false&amp;show_artwork=false&amp;color=ff7700"></iframe>
+</section>
+
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/spadgos">@spadgos</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'spadgos',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos',
+            ignore: 'spadgos.github.com'.split(" ")
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Stack Overflow</h1>
+  <a href="http://stackoverflow.com/users/9021/nickf"
+    ><img src="http://stackoverflow.com/users/flair/9021.png" width="208" height="58" alt="Profile for nickf at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="Profile for nickf at Stack Overflow, Q&amp;A for professional and enthusiast programmers" /></a>
+  <ul id="so_answer">
+    <li class="loading">Loading recent answers...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+      }
+
+      $.ajax({
+        type: 'jsonp',
+        jsonpCallback: 'jsonp',
+        url: 'http://api.stackoverflow.com/1.1/users/9021/answers'
+           + '?body=false'
+           + '&comments=false'
+           + '&method=get'
+           + '&pagesize=5'
+           + '&jsonp=cb'
+           + '&key=TPz4ZgIuDUiQCrMIEyBIPw'
+        , success: function(data) {
+          if (!data || !data.answers) { return; }
+          var i, fragment = '', t = $('#so_answer')[0], a, d;
+
+          fragment = '<li>Recent answers on Stack Overflow</li>';
+          for (i = 0; i < data.answers.length; ++i) {
+            a = data.answers[i];
+            // d = new Date(a.creation_date);
+            fragment += '<li><a href="http://stackoverflow.com/questions/' + a.question_id + '/' + a.answer_id + '#' + a.answer_id + '">' + a.title + '</a></li>';
+          }
+          t.innerHTML = fragment;
+        }
+      });
+    });
+  </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Nick Fisher -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'spadgos-gh';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://spadgos.github.com/blog/2013/10/19/using-requirejs-and-make-for-standalone-libraries/';
+        var disqus_url = 'http://spadgos.github.com/blog/2013/10/19/using-requirejs-and-make-for-standalone-libraries/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
