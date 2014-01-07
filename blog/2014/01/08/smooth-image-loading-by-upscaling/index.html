@@ -1,0 +1,583 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Smooth image loading by upscaling - nickf on code</title>
+  <meta name="author" content="Nick Fisher">
+
+  
+  <meta name="description" content="In this post, I will discuss a technique we use at SoundCloud to make the loading of image appear smoother and faster. The situation: soundcloud.com &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://spadgos.github.com/blog/2014/01/08/smooth-image-loading-by-upscaling">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="nickf on code" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-25824270-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">nickf on code</a></h1>
+  
+    <h2>Javascript and code nerdity</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Smooth Image Loading by Upscaling</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-08T00:58:00+01:00" pubdate data-updated="true">Jan 8<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In this post, I will discuss a technique we use at <a href="https://soundcloud.com">SoundCloud</a> to make the loading of image appear smoother and faster.</p>
+
+<p>The situation: soundcloud.com is a single page application which, among other things, ends up displaying a lot of users&#8217; avatars. The avatars are shown in many different situations from a tiny avatar on a waveform to a large profile image, so we have encoded the image into many different sizes. This same technique could definitely apply to <a href="http://gravatar.com">Gravatar</a> images on any site.</p>
+
+<p><img src="/images/avatar-tiny.jpg" alt="" />
+<img src="/images/avatar-small.jpg" alt="" />
+<img src="/images/avatar-medium.jpg" alt="" />
+<img src="/images/avatar-large.jpg" alt="" /></p>
+
+<p>When displaying one of these images on screen, we want it to be shown to the user as fast as possible, so this technique makes use of the browser&rsquo;s cache of previously loaded images. Quite simply, when displaying a large avatar image, we first display a smaller version of it, stretched out to the full size, and when the large one has loaded, fade it in over the top.</p>
+
+<p>In essence, the code for this looks something like this:</p>
+
+<p>The template:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;img</span> <span class="na">class=</span><span class="s">&quot;placeholder&quot;</span> <span class="na">src=</span><span class="s">&quot;avatar-small.jpg&quot;</span> <span class="na">width=</span><span class="s">&quot;200&quot;</span> <span class="na">height=</span><span class="s">&quot;200&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;img</span> <span class="na">class=</span><span class="s">&quot;fullImage&quot;</span>   <span class="na">src=</span><span class="s">&quot;avatar-large.jpg&quot;</span> <span class="na">width=</span><span class="s">&quot;200&quot;</span> <span class="na">height=</span><span class="s">&quot;200&quot;</span><span class="nt">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The CSS (for brevity, I&rsquo;m not including the positioning code here, but they should lie atop one another):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nc">.fullImage</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">transition</span><span class="o">:</span> <span class="k">opacity</span> <span class="m">0.2s</span> <span class="n">linear</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>&hellip; and the javascript:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">fullImage</span>   <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.fullImage&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">placeholder</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.placeholder&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">fullImage</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s1">&#39;opacity&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;load&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">opacity</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">placeholder</span><span class="p">.</span><span class="nx">remove</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">placeholder</span><span class="p">),</span> <span class="mi">500</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<div id="imgDemo" style="position: relative; width: 200px; margin: auto;" class="flash-video">
+  <img class="placeholder" src="/images/avatar-small.jpg"   width="200" height="200"
+    style="background-color: #f0f; border: 0;"
+  >
+  <img class="fullImage"   src="/images/avatar-large.jpg" width="200" height="200"
+    style="background-color: #0f0; border: 0; position: absolute; top: 0; left: 0; -webkit-transition:opacity .2s linear;-moz-transition:opacity .2s linear;-o-transition:opacity .2s linear;transition:opacity .2s linear"
+  >
+  <label style="font-size: 75%">Simulate:</label> <button class="load">Load</button>
+  <button class="reset" disabled>Reset</button>
+</div>
+
+
+
+
+<script type="text/javascript">
+(function () {
+  var fullImage = $('#imgDemo .fullImage')[0],
+      smallImage = $('#imgDemo .placeholder')[0];
+  fullImage.style.opacity
+    = smallImage.style.opacity
+    = 0;
+
+  $('#imgDemo .reset').click(
+    function () {
+      $('#imgDemo .reset')[0].disabled = 'disabled';
+      $('#imgDemo .load')[0].disabled = false;
+      fullImage.style.opacity
+        = smallImage.style.opacity
+        = 0;
+    }
+  );
+  $('#imgDemo .load').click(
+    function () {
+      $('#imgDemo .reset')[0].disabled = false;
+      $('#imgDemo .load')[0].disabled = 'disabled';
+      smallImage.style.opacity = 1;
+      setTimeout(function () {
+        fullImage.style.opacity = 1;
+      }, 300);
+    }
+  );
+}());
+</script>
+
+
+<p>In the end, not too complicated, and it gives a nice effect to the loading of your images. But there&rsquo;s a problem here: we don&rsquo;t want to make a request to get the small image just to show it for a couple of milliseconds. The overhead of making HTTP requests means that loading the larger image will usually not take significantly longer than the small one. So, therefore it only makes sense to use this technique if a smaller image has already been loaded in this session (and hence, will be served from the browser&rsquo;s cache). But how do we know which images are probably in cache?</p>
+
+<p>Each time an avatar is loaded, we need to keep track of that, but over time, there could be many thousands of avatars loaded in one session, so it needs to be memory efficient. Instead of tracking the full URLs of loaded images, we extract just the minimum amount of information to identify a image, and use a bitmask to store which sizes have been loaded.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// a simple map object, { identifier =&gt; loaded sizes }</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">loadedImages</span> <span class="o">=</span> <span class="p">{},</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Let&#39;s assume a basic url structure like this:</span>
+</span><span class='line'>    <span class="c1">// &quot;http://somesite.com/{identifier}-{size}.jpg&quot; </span>
+</span><span class='line'>    <span class="nx">imageRegex</span> <span class="o">=</span> <span class="sr">/\/(\w+)-(\w+)\.jpg$/</span><span class="p">,</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// a list of the available sizes.</span>
+</span><span class='line'>    <span class="c1">// format is [pixel size, filename representation]</span>
+</span><span class='line'>    <span class="nx">sizes</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'>      <span class="p">[</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;tiny&#39;</span>  <span class="p">],</span>
+</span><span class='line'>      <span class="p">[</span> <span class="mi">40</span><span class="p">,</span> <span class="s1">&#39;small&#39;</span> <span class="p">],</span>
+</span><span class='line'>      <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="s1">&#39;medium&#39;</span><span class="p">],</span>
+</span><span class='line'>      <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="s1">&#39;large&#39;</span> <span class="p">]</span>
+</span><span class='line'>    <span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// extract the identifier and size.</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">storeInfo</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">parts</span> <span class="o">=</span> <span class="nx">imageRegex</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">url</span><span class="p">),</span>
+</span><span class='line'>      <span class="nx">id</span>    <span class="o">=</span> <span class="nx">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>      <span class="nx">size</span>  <span class="o">=</span> <span class="nx">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+</span><span class='line'>      <span class="nx">index</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// find the index which contains this size</span>
+</span><span class='line'>  <span class="nx">sizes</span><span class="p">.</span><span class="nx">some</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">info</span><span class="p">,</span> <span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">===</span> <span class="nx">size</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">loadedImages</span><span class="p">[</span><span class="nx">id</span><span class="p">]</span> <span class="o">|=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="nx">index</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// once the image has loaded, then store it into the map</span>
+</span><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.fullImage&#39;</span><span class="p">).</span><span class="nx">load</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">storeInfo</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">src</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So let&rsquo;s take a look at what&rsquo;s happening there. When the image loads, we extract the important parts from the url: namely the identifier and the size modifier. Each size is then mapped to a number &mdash; its index in the <code>sizes</code> array &mdash; and the appropriate bit is turned on in the loadedImages map. The code on line 27 does this conversion and bit manipulation. <code>1 &lt;&lt; index</code> is essentially the same as <code>Math.pow(2, index)</code>. By storing only a single number in the object, we actually can save quite a bit of memory. A single number object could contain many different flags. For example, assume we have four different sizes and 10,000 images in the map:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">asBools</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">a</span><span class="o">:</span> <span class="p">[</span><span class="kc">true</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">true</span><span class="p">],</span>
+</span><span class='line'>  <span class="nx">b</span><span class="o">:</span> <span class="p">[</span><span class="kc">false</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">false</span><span class="p">],</span>
+</span><span class='line'>  <span class="c1">// etc...</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">asInts</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">a</span><span class="o">:</span> <span class="mi">11</span><span class="p">,</span>  <span class="c1">// 2^0 + 2^1 + 2^3 = 1 + 2 + 8</span>
+</span><span class='line'>  <span class="nx">b</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>   <span class="c1">// 2^1</span>
+</span><span class='line'>  <span class="c1">// etc...</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The memory footprint of these two objects differ 30%: 1,372,432 bytes for the booleans, and 1,052,384 for the integers. The greatest amount of memory used in these is actually for the key names, so depending on how you identify the images, compressing that as much as possible will also help. Numeric keys are stored particularly efficiently by V8.</p>
+
+<p>So anyway, back to the issue. We now have a map showing us which images have been loaded during this session, so it&rsquo;s time to use that information for choosing a placeholder.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// find the largest image smaller than the requested one</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">getPlaceholder</span><span class="p">(</span><span class="nx">fullUrl</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">parts</span> <span class="o">=</span> <span class="nx">imageRegex</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">fullUrl</span><span class="p">),</span>
+</span><span class='line'>      <span class="nx">id</span> <span class="o">=</span> <span class="nx">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+</span><span class='line'>      <span class="nx">targetSize</span> <span class="o">=</span> <span class="nx">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+</span><span class='line'>      <span class="nx">targetIndex</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">sizes</span><span class="p">.</span><span class="nx">some</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">info</span><span class="p">,</span> <span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="nx">targetSize</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">targetIndex</span> <span class="o">=</span> <span class="nx">index</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">while</span> <span class="p">(</span><span class="nx">targetIndex</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">loadedImages</span><span class="p">[</span><span class="nx">id</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="nx">targetIndex</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nx">fullUrl</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\w+\.jpg$/</span><span class="p">,</span> <span class="nx">sizes</span><span class="p">[</span><span class="nx">targetIndex</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.jpg&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="o">--</span><span class="nx">targetIndex</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// and in usage:</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">placeholderUrl</span> <span class="o">=</span> <span class="nx">getPlaceholder</span><span class="p">(</span><span class="nx">fullSizeUrl</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="nx">placeholderUrl</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c1">// there has been a smaller image loaded previously, so...</span>
+</span><span class='line'>  <span class="nx">addTheFadeInBehaviour</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c1">// no smaller image has been loaded so...</span>
+</span><span class='line'>  <span class="nx">loadFullSizeAsNormal</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This technique is not completely basic, and I&rsquo;ve deliberately glossed over some of the finer details, but it can create a very nice effect on your site, and is especially effective for long-lived single-page apps. I hope you find it useful.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Nick Fisher</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-08T00:58:00+01:00" pubdate data-updated="true">Jan 8<span>th</span>, 2014</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/10/19/using-requirejs-and-make-for-standalone-libraries/" title="Previous Post: Using RequireJS and Make for standalone libraries">&laquo; Using RequireJS and Make for standalone libraries</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/01/08/smooth-image-loading-by-upscaling/">Smooth image loading by upscaling</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/19/using-requirejs-and-make-for-standalone-libraries/">Using RequireJS and Make for standalone libraries</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/06/01/soundclouds-stack-slides-from-fluentconf-and-sfjs/">SoundCloud's Stack: Slides from FluentConf and SFJS</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/25/citysonar/">CitySonar</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/01/csspecific-plugin-for-sublimetext/">CSSpecific plugin for SublimeText</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  
+  <iframe width="100%" height="450" scrolling="no" frameborder="no" src="http://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Fusers%2F6431392%2Ffavorites&amp;auto_play=false&amp;show_artwork=false&amp;color=ff7700"></iframe>
+</section>
+
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/spadgos">@spadgos</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'spadgos',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos',
+            ignore: 'spadgos.github.com'.split(" ")
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Stack Overflow</h1>
+  <a href="http://stackoverflow.com/users/9021/nickf"
+    ><img src="http://stackoverflow.com/users/flair/9021.png" width="208" height="58" alt="Profile for nickf at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="Profile for nickf at Stack Overflow, Q&amp;A for professional and enthusiast programmers" /></a>
+  <ul id="so_answer">
+    <li class="loading">Loading recent answers...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+      }
+
+      $.ajax({
+        type: 'jsonp',
+        jsonpCallback: 'jsonp',
+        url: 'http://api.stackoverflow.com/1.1/users/9021/answers'
+           + '?body=false'
+           + '&comments=false'
+           + '&method=get'
+           + '&pagesize=5'
+           + '&jsonp=cb'
+           + '&key=TPz4ZgIuDUiQCrMIEyBIPw'
+        , success: function(data) {
+          if (!data || !data.answers) { return; }
+          var i, fragment = '', t = $('#so_answer')[0], a, d;
+
+          fragment = '<li>Recent answers on Stack Overflow</li>';
+          for (i = 0; i < data.answers.length; ++i) {
+            a = data.answers[i];
+            // d = new Date(a.creation_date);
+            fragment += '<li><a href="http://stackoverflow.com/questions/' + a.question_id + '/' + a.answer_id + '#' + a.answer_id + '">' + a.title + '</a></li>';
+          }
+          t.innerHTML = fragment;
+        }
+      });
+    });
+  </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Nick Fisher -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'spadgos-gh';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://spadgos.github.com/blog/2014/01/08/smooth-image-loading-by-upscaling/';
+        var disqus_url = 'http://spadgos.github.com/blog/2014/01/08/smooth-image-loading-by-upscaling/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
