@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Back to Front</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/black.css" id="theme">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+    <link rel="stylesheet" href="//style.sndcdn.com/css/sc.min-17f1351432f0ac6e3e7addf0e82b53699bbd6c05.css"/>
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+
+  <body class="sc-font">
+
+    <div class="reveal">
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+
+        <section>
+          <h1>Back to Front</h1>
+          <h3>Getting data into your app, safely</h3>
+          <p>
+            <small>Nick Fisher / SoundCloud / <a href="http://twitter.com/spadgos">@spadgos</a></small>
+          </p>
+        </section>
+        <section>
+          <section>
+            <h2>Quick preamble</h2>
+          </section>
+          <section>
+            <h2>Warning</h2>
+            <h4>This talk is mostly code</h4>
+          </section>
+          <section>
+            <h2>Two minute TypeScript Intro</h2>
+            <ul>
+              <li>Any familiarity with types will do</li>
+              <li class="fragment">Literal types
+                <code class="hljs">fn = (x: 42) => x;</code>
+                <code class="hljs">fn = (x: 'hi') => x;</code>
+              </li>
+              <li class="fragment">Generics</li>
+            </ul>
+            <aside class="notes">
+              <li>Talk all about types, using TS</li>
+              <li>One interesting feature: literal types</li>
+            </aside>
+          </section>
+          <section>
+            <h2>Generics</h2>
+            <pre class="fragment"><code class="hljs" data-trim>
+              const arrOfStrings: string[] = [];
+              const arrOfStrings: Array&lt;string> = [];
+            </code></pre>
+            <pre class="fragment"><code class="hljs" data-trim>
+              // using generics in a function signature
+              function identity&lt;T>(x: T): T {
+                return x;
+              }
+            </code></pre>
+            <pre class="fragment"><code class="hljs" data-trim>
+              // using generics in an interface
+              interface Resource&lt;T> {
+                id: T;
+              }
+            </code></pre>
+            <aside class="notes">
+              <li>Array is parameterized with string</li>
+              <li>identity parameterized with type T</li>
+              <li>The type names are arbitrary; by convention, single letter to distinguish</li>
+            </aside>
+          </section>
+
+          <section>
+            <h2>TypeScript in the front-end</h2>
+            <pre class="fragment"><code class="hljs" data-trim>
+              interface Person {
+                firstName: string;
+                lastName: string;
+              }
+            </code></pre>
+            <pre class="fragment"><code class="hljs" data-trim data-noescape>
+              function getFullName(person: Person): string {
+                return person.firstName + ' ' + person.lastName;
+              }
+              <span class="fragment">
+              const person: Person = {
+                firstName: 'Grace',
+                lastName: 'Hopper'
+              };
+              </span>
+              <span class="fragment">const name = getFullName(person);</span>
+            </code></pre>
+            <aside class="notes">
+              <li>Create an interface</li>
+              <li>Write a nice function, get type safety</li>
+              <li>Call it safely</li>
+              <li>This line here: nice for demos but in a real app, i hope no one writes their entire DB into source</li>
+              <li>You talk to a back end to get this; how do you get the right types when you do so?</li>
+            </aside>
+          </section>
+        </section>
+        <section>
+          <h2>Let's begin</h2>
+        </section>
+        <section>
+          <h2>The steps</h2>
+          <ol>
+            <li class="fragment">Back-end generates a domain model</li>
+            <li class="fragment">Back-end serializes for transport (eg: JSON.stringify)</li>
+            <li class="fragment">A series of tubes</li>
+            <li class="fragment">Front-end deserializes (eg: JSON.parse)</li>
+            <li class="fragment">Front-end hydrates to domain model
+              <ul>
+                <li>(eg: <code style="font-size: 80%; color: #529f53">new User(data)</code>)</li>
+              </ul>
+            </li>
+          </ol>
+          <aside class="notes">
+            <li>Request comes in; BE talks to database or upstream services, applies business logic; builds a model</li>
+            <li>FE deserializes json string into an object</li>
+          </aside>
+        </section>
+        <section>
+          <h2>A Common Approach</h2>
+          <pre class="fragment"><code class="hljs" data-trim data-noescape>
+            makeRequest(<span class="fragment">`users/${id}/tracks?limit=${limit}`</span>)
+              <span class="fragment">.then(parseResponse);</span>
+          </code></pre>
+          <pre class="fragment"><code class="hljs" data-trim data-noescape>
+            function parseResponse(data<span class="fragment">: any</span>): Array&lt;Track> {
+              <span class="fragment">return data;</span>
+            }
+          </code></pre>
+          <p class="fragment"><em>"Trust me"</em></p>
+          <aside class="notes">
+            <li>(Back up to show just the call to makeRequest)</li>
+            <li>Look just at the string; think of it as a function</li>
+          </aside>
+        </section>
+        <section>
+          <h2>Endpoints config</h2>
+          <pre class="fragment"><code class="hljs" data-trim>
+            const endpoints = {
+              userTracks: {
+                url: '/users/:id/tracks',
+                query: {
+                  limit: 10
+                }
+              },
+              trackStats: {
+                url: '/tracks/:id/stats/:category'
+              }
+            }
+          </code></pre>
+        </section>
+        <section>
+          <h2>Endpoints usage</h2>
+          <pre class="fragment"><code class="hljs" data-trim>
+            Endpoints.callEndpoint(
+              'userTracks', { id: 123 }, { limit: 5 }
+            ).then( ... );
+          </code></pre>
+          <ul>
+            <li class="fragment">Cleaner to use</li>
+            <li class="fragment">Easier to test</li>
+            <li class="fragment">Easier to find API usage</li>
+            <li class="fragment">Single point of config</li>
+            <li class="fragment">But... no types yet</li>
+          </ul>
+        </section>
+        <section>
+          <section>
+            <h2>Let's add some types then</h2>
+            <pre class="fragment" data-fragment-index="1"><code class="hljs" data-trim>
+              Endpoints.callEndpoint(
+                'userTracks', { id: 123 }, { limit: 5 }
+              ).then( ... );
+            </code></pre>
+            <pre class="fragment" data-fragment-index="2"><code class="hljs" data-trim data-noescape>
+              type EndpointsInstance = {
+                <span class="fragment" data-fragment-index="3">callEndpoint: (</span>
+                  <span class="fragment" data-fragment-index="4">name<span class="fragment" data-fragment-index="5">: 'userTracks',</span>
+                  pathParams<span class="fragment" data-fragment-index="6">: { id: number },</span>
+                  queryParams<span class="fragment" data-fragment-index="7">: { limit?: number }</span></span>
+                <span class="fragment" data-fragment-index="3">) => Promise<span class="fragment" data-fragment-index="8">&lt;Array&lt;Track>></span></span>
+              };
+            </code></pre>
+            <p class="fragment" data-fragment-index="9">↓ Demo</p>
+          </section>
+          <section>
+            <video src="demo-1.ogv" controls></video>
+          </section>
+        </section>
+        <section>
+          <section>
+            <h2>One down...</h2>
+            <pre class="fragment"><code class="hljs" data-trim data-noescape>
+              type EndpointsInstance = {
+                callEndpoint: ((
+                  name: 'userTracks',
+                  pathParams: { id: number },
+                  queryParams: { limit?: number }
+                ) => Promise&lt;Array&lt;Track>>)
+                <span class="fragment">& (<span class="fragment">(
+                  name: 'trackStats',
+                  pathParams: {
+                    id: number,
+                    category: 'plays' | 'likes' | 'reposts'
+                  },
+                  queryParams: {}
+                ) => Promise&lt;Stats></span>)</span>
+              };
+            </code></pre>
+            <p class="fragment">↓ Demo</p>
+          </section>
+          <section>
+            <video src="demo-2.ogv" controls></video>
+          </section>
+        </section>
+        <section>
+          <p>Problem: Tooling support not great</p>
+          <p class="fragment">Solution: Partial application!</p>
+          <pre class="fragment" style="font-size: 45%"><code class="hljs" data-trim data-noescape>
+            (name: string, pathParams: object, queryParams: object) => Promise;
+            <span class="fragment">(name: string) => (pathParams: object, queryParams: object) => Promise;</span>
+          </code></pre>
+          <pre class="fragment"><code class="hljs" data-trim data-noescape>
+            callEndpoint('user')({ id: 123 }, {}).then((user) => ...)
+          </code></pre>
+        </section>
+        <section>
+          <p>Problem: Repetitive</p>
+          <p class="fragment">Solution: Generics to the rescue!</p>
+          <pre class="fragment" style="font-size: 45%"><code class="hljs" data-trim data-noescape>
+            type Endpoint<span class="fragment">&lt;N, P, Q, R></span>
+            <span class="fragment">  = (name: N) =></span><span class="fragment"> (pathParams: P, queryParams: Q) =></span><span class="fragment"> Promise&lt;R></span>
+          </code></pre>
+          <pre class="fragment" style="font-size: 45%"><code class="hljs" data-trim data-noescape>
+            type EndpointsInstance = {
+              callEndpoint:
+                Endpoint&lt;
+                  'userTracks',
+                  { id: number }, { limit?: number },
+                  Array&lt;Track>
+                >
+              & Endpoint&lt;
+                  'trackStats',
+                  {
+                    id: number,
+                    category: 'plays' | 'likes' | 'reposts'
+                  }, {}, Stats
+                >
+            };
+          </code></pre>
+        </section>
+        <section>
+          <section>
+            <h2>Can be modularized</h2>
+            <pre class="fragment" style="font-size: 45%"><code class="hljs" data-trim data-noescape>
+              // search-endpoints.ts
+              export Users = Endpoint&lt;'searchUsers', null, { query: string }, User[]>
+              export Tracks = Endpoint&lt;'searchTracks', null, { query: string }, Track[]>
+            </code></pre>
+            <pre class="fragment" style="font-size: 45%"><code class="hljs" data-trim data-noescape>
+              // user-endpoints.ts
+              export User = Endpoint&lt;'user', { id: number }, {}, User>
+            </code></pre>
+            <pre class="fragment" style="font-size: 45%"><code class="hljs" data-trim data-noescape>
+              import * as Search from './search-endpoints';
+              import * as User from './user-endpoints';
+
+              type EndpointsInstance = {
+                callEndpoint: Search.Users & Search.Tracks & User.User;
+              }
+            </code></pre>
+            <p class="fragment">↓ Demo</p>
+          </section>
+          <section>
+            <video src="demo-3.ogv" controls></video>
+          </section>
+        </section>
+        <section>
+          <h2>Hang on a second...</h2>
+          <h3 class="fragment">How is this any safer than before?</h3>
+          <h4 class="fragment">It isn't! (much)</h4>
+          <p class="fragment"><em>"Trust me"</em></pr>
+          <aside class="notes">
+            <li>the inputs to the call are now type checked, which is good</li>
+            <li>you have one set of type definitions which you could share across multiple applications which use that api</li>
+            <li>still effectively the same as before with a function that took any and return the type you wanted</li>
+            <li>you make up an interface and that's what you hope you get from the api</li>
+          </aside>
+        </section>
+        <section>
+          <h2>Verifying your types</h2>
+          <p class="fragment">One way to verify a type def... use TS itself</p>
+          <pre class="fragment"><code class="hljs" data-trim data-noescape>
+          function verifyUser(data: User) {}
+
+          <span class="fragment">verifyUser({ id: 123, firstName: 'Ada' });</span>
+          <span class="fragment">verifyUser({ id: 11, firstName: 11 }); // error</span>
+          </code></pre>
+          <div class="fragment" style="position: absolute; width: 100%; top: 0">
+            <img class="fragment fade-out" src="https://media1.giphy.com/media/3o7TKQRwbH1n0NSAV2/giphy.gif" />
+          </div>
+          <pre class="fragment"><code class="hljs" data-trim data-noescape>
+            function verify&lt;R>(data: R): void {}
+          </code></pre>
+          <p class="fragment">Grab some fixtures, away you go</p>
+          <p class="fragment">...but don't forget to maintain them</p>
+          <aside class="notes">
+            <li>First thing is to check that we've written our types correctly</li>
+            <li>We have a good tool for verifying that...</li>
+            <li>Catches errors, only a problem if your name is actually a number</li>
+            <li>Can write a generic function, then just grab a heap of fixtures</li>
+          </aside>
+        </section>
+        <section>
+          <h2>Verifying your plumbing</h2>
+          <pre class="fragment"><code class="hljs" data-trim data-noescape>
+          callEndpoint('user')({ id: 123 }, {}); // => Promise&lt;User>
+          </code></pre>
+          <aside class="notes">
+            <li>Good to check that your user interface matches the api, but</li>
+            <li>Verify that the user endpoint with these args *actually* returns a user</li>
+          </aside>
+        </section>
+        <section>
+          <h2>Hang on a second...</h2>
+          <p class="fragment" data-fragment-index="1">Don't we have everything we need here?</p>
+          <pre class="fragment" data-fragment-index="2" style="font-size: 45%"><code class="hljs" data-trim data-noescape>
+            verify(<span class="fragment" data-fragment-index="3">'user')({ id : 123 }, {}</span>)<span class="fragment" data-fragment-index="4">({
+              id: 123,
+              firstName: 'Ada'
+            });</span>
+          </code></pre>
+          <pre class="fragment" data-fragment-index="5" style="font-size: 45%"><code class="hljs" data-trim data-noescape>
+            callEndpoint:
+              <span class="fragment" data-fragment-index="6">(name: N) =></span><span class="fragment" data-fragment-index="7"> (path: P, query: Q) =></span><span class="fragment" data-fragment-index="8"> Promise&lt;R></span>
+            verify:
+              <span class="fragment" data-fragment-index="6">(name: N) =></span><span class="fragment" data-fragment-index="7"> (path: P, query: Q) =></span><span class="fragment" data-fragment-index="9"> (expectedResult: R) => void;</span>
+          </code></pre>
+          <p class="fragment" data-fragment-index="10">Now, just put the right fixture with the right call</p>
+          <aside class="notes">
+            <li>What if we made a function called verify which took the same args as callEndpoint</li>
+            <li>Instead of a promise, it returned function? Then we'd just have to give it the fixture</li>
+          </aside>
+        </section>
+        <section>
+          <h2>Duplicate all the endpoints?</h2>
+          <pre class="fragment" style="font-size: 45%"><code class="hljs" data-trim data-noescape>
+            type CallUser = Endpoint<'user', { id: number }, {}, User>
+            type VerifyUser = Verify<'user', { id: number }, {}, User>
+          </code></pre>
+          <h4 class="fragment">Nope</h4>
+          <pre class="fragment" style="font-size: 45%"><code class="hljs" data-trim data-noescape>
+            type Endpoint&lt;N, P, Q, R> = (name: N) => (path: P, query: Q) => Promise&lt;R>
+
+            <span class="fragment">type Endpoint&lt;N, P, Q, R> = {
+              <span class="fragment">call: (name: N) => (path: P, query: Q) => Promise&lt;R></span>
+              <span class="fragment">verify: (name: N) => (path: P, query: Q) => (result: R) => void;</span>
+            }</span>
+          </code></pre>
+          <pre class="fragment" style="font-size: 45%"><code class="hljs" data-trim data-noescape>
+            type EndpointsInstance = {
+              callEndpoint: Search.Tracks['call']
+                          & Search.Users['call'] & ... // etc
+            }
+
+            <span class="fragment">type Verify = Search.Tracks['verify']
+                        & Search.Users['verify'] & ... // etc</span>
+          </code></pre>
+        </section>
+        <section>
+          <h2>Getting the fixtures</h2>
+          <p class="fragment">Remember what we're building here...</p>
+          <pre class="fragment"><code class="hljs" data-trim data-noescape>
+                  verify('user')({ id : 123 }, {}); // (User) => void
+            <span class="fragment">callEndpoint('user')({ id : 123 }, {}); // Promise&lt;User></span>
+          </code></pre>
+          <p class="fragment">We can test the library using the library itself</p>
+        </section>
+        <section>
+          <h2>Testing process</h2>
+          <pre class="fragment"><code class="hljs" data-trim data-noescape>
+            verify('user')({ id: 123 }, {});
+            verify('user')({ id: 234 }, {});
+          </code></pre>
+          <ol>
+            <li class="fragment">Using AST magic (thanks to <a href="https://github.com/wix/tspoon">tspoon</a>)...</li>
+            <li class="fragment">Find the <code>verify</code> calls</li>
+            <li class="fragment"><em>Actually call</em> the endpoints library with the args</li>
+            <li class="fragment">Rewrite the code to:
+              <pre style="font-size: 45%"><code class="hljs" data-trim data-noescape>
+                verify('user')({id: 123}, {})({ id: 123, firstName: 'Ada' });
+                verify('user')({id: 234}, {})({ id: 234, firstName: 'Hedy' });
+              </code></pre>
+            </li>
+            <li class="fragment">Then just run <code>tsc</code> on the modified code</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Benefits</h2>
+          <ul>
+            <li class="fragment">Tests the full integration with the API</li>
+            <li class="fragment">Can be run as part of the API tests to catch regressions</li>
+            <li class="fragment">Super simple interface for tests</li>
+          </ul>
+          <aside class="notes">
+            <li>tests the local configuration, the shape of the api response</li>
+            <li>this can be built into the tests of your api, so any regressions will be caught there before it goes live</li>
+            <li>If anyone can think of a more succinct way to write the tests, lmk</li>
+          </aside>
+        </section>
+        <section>
+          <h2>Downsides</h2>
+          <ul>
+            <li class="fragment">No coverage</li>
+            <li class="fragment">Not as expressive as JSON Schema</li>
+            <li class="fragment">Only covers the happy case</li>
+          </ul>
+          <aside class="notes">
+            <li>you have to ensure you cover all the edge cases</li>
+            <li>afaik, no tools to check that all the values of a type have been checked (eg: enum field)</li>
+            <li>There are things you can't express using this style (eg: this particular track should be private)</li>
+            <li>Only covers the happy case where the call works. Proper contract testing would also check responses when errors occur</li>
+          </aside>
+        </section>
+        <section>
+          <h2>In summary</h2>
+          <aside class="notes">
+            <li>We've seen a few techniques here to improve the way you talk to your api</li>
+            <li>If you're using types, i hope you can see a lot of benefits in these techniques</li>
+            <li>Even if you're not using typescript, hopefully there's some ideas you can take away</li>
+          </aside>
+        </section>
+      </div>
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+
+    <script>
+
+      // More info https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+        // More info https://github.com/hakimel/reveal.js#dependencies
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true },
+          { src: 'plugin/notes/notes.js', async: true }
+        ]
+      });
+
+    </script>
+
+  </body>
+</html>
