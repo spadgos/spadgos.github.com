@@ -16,7 +16,6 @@
 
     <!-- Theme used for syntax highlighting of code -->
     <link rel="stylesheet" href="lib/css/zenburn.css">
-    <link rel="stylesheet" href="//style.sndcdn.com/css/sc.min-17f1351432f0ac6e3e7addf0e82b53699bbd6c05.css"/>
 
     <!-- Printing and PDF exports -->
     <script>
@@ -64,10 +63,6 @@
               </li>
               <li class="fragment">Generics</li>
             </ul>
-            <aside class="notes">
-              <li>Talk all about types, using TS</li>
-              <li>One interesting feature: literal types</li>
-            </aside>
           </section>
           <section>
             <h2>Generics</h2>
@@ -87,11 +82,6 @@
                 id: T;
               }
             </code></pre>
-            <aside class="notes">
-              <li>Array is parameterized with string</li>
-              <li>identity parameterized with type T</li>
-              <li>The type names are arbitrary; by convention, single letter to distinguish</li>
-            </aside>
           </section>
 
           <section>
@@ -114,13 +104,6 @@
               </span>
               <span class="fragment">const name = getFullName(person);</span>
             </code></pre>
-            <aside class="notes">
-              <li>Create an interface</li>
-              <li>Write a nice function, get type safety</li>
-              <li>Call it safely</li>
-              <li>This line here: nice for demos but in a real app, i hope no one writes their entire DB into source</li>
-              <li>You talk to a back end to get this; how do you get the right types when you do so?</li>
-            </aside>
           </section>
         </section>
         <section>
@@ -139,10 +122,6 @@
               </ul>
             </li>
           </ol>
-          <aside class="notes">
-            <li>Request comes in; BE talks to database or upstream services, applies business logic; builds a model</li>
-            <li>FE deserializes json string into an object</li>
-          </aside>
         </section>
         <section>
           <h2>A Common Approach</h2>
@@ -156,10 +135,6 @@
             }
           </code></pre>
           <p class="fragment"><em>"Trust me"</em></p>
-          <aside class="notes">
-            <li>(Back up to show just the call to makeRequest)</li>
-            <li>Look just at the string; think of it as a function</li>
-          </aside>
         </section>
         <section>
           <h2>Endpoints config</h2>
@@ -308,12 +283,6 @@
           <h3 class="fragment">How is this any safer than before?</h3>
           <h4 class="fragment">It isn't! (much)</h4>
           <p class="fragment"><em>"Trust me"</em></pr>
-          <aside class="notes">
-            <li>the inputs to the call are now type checked, which is good</li>
-            <li>you have one set of type definitions which you could share across multiple applications which use that api</li>
-            <li>still effectively the same as before with a function that took any and return the type you wanted</li>
-            <li>you make up an interface and that's what you hope you get from the api</li>
-          </aside>
         </section>
         <section>
           <h2>Verifying your types</h2>
@@ -332,22 +301,12 @@
           </code></pre>
           <p class="fragment">Grab some fixtures, away you go</p>
           <p class="fragment">...but don't forget to maintain them</p>
-          <aside class="notes">
-            <li>First thing is to check that we've written our types correctly</li>
-            <li>We have a good tool for verifying that...</li>
-            <li>Catches errors, only a problem if your name is actually a number</li>
-            <li>Can write a generic function, then just grab a heap of fixtures</li>
-          </aside>
         </section>
         <section>
           <h2>Verifying your plumbing</h2>
           <pre class="fragment"><code class="hljs" data-trim data-noescape>
           callEndpoint('user')({ id: 123 }, {}); // => Promise&lt;User>
           </code></pre>
-          <aside class="notes">
-            <li>Good to check that your user interface matches the api, but</li>
-            <li>Verify that the user endpoint with these args *actually* returns a user</li>
-          </aside>
         </section>
         <section>
           <h2>Hang on a second...</h2>
@@ -365,10 +324,6 @@
               <span class="fragment" data-fragment-index="6">(name: N) =></span><span class="fragment" data-fragment-index="7"> (path: P, query: Q) =></span><span class="fragment" data-fragment-index="9"> (expectedResult: R) => void;</span>
           </code></pre>
           <p class="fragment" data-fragment-index="10">Now, just put the right fixture with the right call</p>
-          <aside class="notes">
-            <li>What if we made a function called verify which took the same args as callEndpoint</li>
-            <li>Instead of a promise, it returned function? Then we'd just have to give it the fixture</li>
-          </aside>
         </section>
         <section>
           <h2>Duplicate all the endpoints?</h2>
@@ -430,11 +385,6 @@
             <li class="fragment">Can be run as part of the API tests to catch regressions</li>
             <li class="fragment">Super simple interface for tests</li>
           </ul>
-          <aside class="notes">
-            <li>tests the local configuration, the shape of the api response</li>
-            <li>this can be built into the tests of your api, so any regressions will be caught there before it goes live</li>
-            <li>If anyone can think of a more succinct way to write the tests, lmk</li>
-          </aside>
         </section>
         <section>
           <h2>Downsides</h2>
@@ -443,20 +393,9 @@
             <li class="fragment">Not as expressive as JSON Schema</li>
             <li class="fragment">Only covers the happy case</li>
           </ul>
-          <aside class="notes">
-            <li>you have to ensure you cover all the edge cases</li>
-            <li>afaik, no tools to check that all the values of a type have been checked (eg: enum field)</li>
-            <li>There are things you can't express using this style (eg: this particular track should be private)</li>
-            <li>Only covers the happy case where the call works. Proper contract testing would also check responses when errors occur</li>
-          </aside>
         </section>
         <section>
           <h2>In summary</h2>
-          <aside class="notes">
-            <li>We've seen a few techniques here to improve the way you talk to your api</li>
-            <li>If you're using types, i hope you can see a lot of benefits in these techniques</li>
-            <li>Even if you're not using typescript, hopefully there's some ideas you can take away</li>
-          </aside>
         </section>
       </div>
     </div>
